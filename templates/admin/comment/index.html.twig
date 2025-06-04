@@ -1,0 +1,106 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Comments - Admin Panel{% endblock %}
+{% block page_title %}Comments{% endblock %}
+
+{% block body %}
+<div class="flex justify-between items-center mb-6">
+    <h3 class="text-xl font-semibold text-gray-800">Manage Comments</h3>
+    <div class="text-gray-600">
+        Total: <span class="font-semibold">{{ comments|length }}</span> comments
+    </div>
+</div>
+
+{% if comments|length > 0 %}
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comment</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">News Article</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for comment in comments %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ comment.id }}</td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-900">{{ comment.authorName }}</div>
+                                {% if comment.email %}
+                                    <div class="text-sm text-gray-500">{{ comment.email }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900 max-w-xs">
+                                    <p class="truncate">
+                                        {{ comment.content|slice(0, 100) }}
+                                        {% if comment.content|length > 100 %}...{% endif %}
+                                    </p>
+                                    {% if comment.content|length > 100 %}
+                                        <button onclick="toggleFullComment({{ comment.id }})" 
+                                                class="text-blue-600 hover:text-blue-800 text-xs mt-1">
+                                            Read more
+                                        </button>
+                                        <div id="full-comment-{{ comment.id }}" class="hidden mt-2 p-2 bg-gray-50 rounded text-xs">
+                                            {{ comment.content }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm">
+                                    <a href="{{ path('app_news_show', {id: comment.news.id}) }}" 
+                                       target="_blank" 
+                                       class="text-blue-600 hover:text-blue-800 font-medium">
+                                        {{ comment.news.title|slice(0, 50) }}
+                                        {% if comment.news.title|length > 50 %}...{% endif %}
+                                    </a>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ comment.createdAt|date('M d, Y') }}
+                                <div class="text-xs text-gray-400">{{ comment.createdAt|date('g:i A') }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <a href="{{ path('app_news_show', {id: comment.news.id}) }}#comment-{{ comment.id }}" 
+                                       class="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-md hover:bg-blue-200 transition-colors duration-200" 
+                                       target="_blank">
+                                        👁️ View
+                                    </a>
+                                    <form method="post" action="{{ path('admin_comment_delete', {id: comment.id}) }}" 
+                                          style="display: inline-block;" 
+                                          onsubmit="return confirm('Are you sure you want to delete this comment?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
+                                        <button type="submit" class="px-3 py-1 bg-red-100 text-red-700 text-xs rounded-md hover:bg-red-200 transition-colors duration-200">
+                                            🗑️ Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <div class="bg-purple-50 border border-purple-200 rounded-lg p-8 text-center">
+        <div class="text-6xl mb-4">💬</div>
+        <h4 class="text-xl font-semibold text-purple-800 mb-2">No Comments Yet</h4>
+        <p class="text-purple-600">No comments have been posted yet. Comments will appear here once users start commenting on your news articles.</p>
+    </div>
+{% endif %}
+
+<script>
+function toggleFullComment(commentId) {
+    const fullComment = document.getElementById('full-comment-' + commentId);
+    fullComment.classList.toggle('hidden');
+}
+</script>
+{% endblock %} 

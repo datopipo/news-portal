@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Admin Panel - News Portal{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        
+        {% block stylesheets %}
+        <style>
+            .admin-sidebar {
+                min-height: 100vh;
+            }
+            .stats-card {
+                transition: transform 0.2s;
+            }
+            .stats-card:hover {
+                transform: translateY(-2px);
+            }
+        </style>
+        {% endblock %}
+    </head>
+
+    <body class="bg-gray-100">
+        <div class="flex">
+            <!-- Sidebar -->
+            <nav class="w-64 admin-sidebar bg-gray-800 text-white">
+                <div class="p-4">
+                    <div class="text-center mb-6">
+                        <h5 class="text-xl font-bold text-white">📰 Admin Panel</h5>
+                    </div>
+                    
+                    <ul class="space-y-2">
+                        <li>
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'admin_dashboard' ? 'bg-gray-700 text-white' : '' }}" 
+                               href="{{ path('admin_dashboard') }}">
+                                📊 Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'admin_category' ? 'bg-gray-700 text-white' : '' }}" 
+                               href="{{ path('admin_category_index') }}">
+                                📁 Categories
+                            </a>
+                        </li>
+                        <li>
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'admin_news' ? 'bg-gray-700 text-white' : '' }}" 
+                               href="{{ path('admin_news_index') }}">
+                                📰 News
+                            </a>
+                        </li>
+                        <li>
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'admin_comment' ? 'bg-gray-700 text-white' : '' }}" 
+                               href="{{ path('admin_comment_index') }}">
+                                💬 Comments
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <hr class="my-4 border-gray-600">
+                    
+                    <ul class="space-y-2">
+                        <li>
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200" 
+                               href="{{ path('app_home') }}" target="_blank">
+                                🌐 View Site
+                            </a>
+                        </li>
+                        <li>
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200" 
+                               href="{{ path('admin_logout') }}">
+                                🚪 Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="flex-1 p-6">
+                <!-- Top Navigation -->
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                    <h1 class="text-3xl font-bold text-gray-900">{% block page_title %}Admin Panel{% endblock %}</h1>
+                    <div class="text-gray-600">
+                        Welcome, {{ app.user.userIdentifier }}
+                    </div>
+                </div>
+
+                <!-- Flash Messages -->
+                {% for type, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="mb-4 p-4 rounded-md {% if type == 'error' %}bg-red-50 border border-red-200 text-red-800{% elseif type == 'success' %}bg-green-50 border border-green-200 text-green-800{% else %}bg-blue-50 border border-blue-200 text-blue-800{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <!-- Page Content -->
+                {% block body %}{% endblock %}
+            </main>
+        </div>
+        
+        {% block javascripts %}{% endblock %}
+    </body>
+</html> 

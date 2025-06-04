@@ -1,0 +1,86 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Edit Article - Admin Panel{% endblock %}
+{% block page_title %}Edit Article: {{ news.title }}{% endblock %}
+
+{% block body %}
+<div class="flex flex-wrap -mx-4">
+    <div class="w-full lg:w-2/3 px-4">
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h5 class="text-lg font-semibold text-gray-800">Article Information</h5>
+            </div>
+            <div class="p-6">
+                {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'class': 'space-y-6'}}) }}
+                    <div>
+                        {{ form_label(form.title, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                        {{ form_widget(form.title, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                        {{ form_errors(form.title) }}
+                    </div>
+                    
+                    <div>
+                        {{ form_label(form.shortDescription, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                        {{ form_widget(form.shortDescription, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent', 'rows': '3'}}) }}
+                        {{ form_errors(form.shortDescription) }}
+                    </div>
+                    
+                    <div>
+                        {{ form_label(form.content, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                        {{ form_widget(form.content, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent', 'rows': '10'}}) }}
+                        {{ form_errors(form.content) }}
+                    </div>
+                    
+                    {% if news.picture %}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Current Picture</label>
+                            <div>
+                                <img src="{{ asset('uploads/pictures/' ~ news.picture) }}" alt="Current picture" class="max-w-xs rounded-md border border-gray-300">
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div>
+                        {{ form_label(form.pictureFile, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                        {{ form_widget(form.pictureFile, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                        {{ form_errors(form.pictureFile) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.categories, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                        {{ form_widget(form.categories, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent', 'size': '5'}}) }}
+                        {{ form_errors(form.categories) }}
+                        <div class="mt-1 text-sm text-gray-500">Hold Ctrl/Cmd to select multiple categories</div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            💾 Update Article
+                        </button>
+                        <a href="{{ path('admin_news_index') }}" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                            ❌ Cancel
+                        </a>
+                        <a href="{{ path('app_news_show', {id: news.id}) }}" class="px-4 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" target="_blank">
+                            👁️ View Public
+                        </a>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    <div class="w-full lg:w-1/3 px-4 mt-6 lg:mt-0">
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h5 class="text-lg font-semibold text-gray-800">Article Stats</h5>
+            </div>
+            <div class="p-6">
+                <div class="space-y-3">
+                    <p class="text-sm"><span class="font-medium text-gray-700">Views:</span> <span class="text-gray-900">{{ news.viewCount }}</span></p>
+                    <p class="text-sm"><span class="font-medium text-gray-700">Comments:</span> <span class="text-gray-900">{{ news.comments|length }}</span></p>
+                    <p class="text-sm"><span class="font-medium text-gray-700">Published:</span> <span class="text-gray-900">{{ news.insertDate|date('M d, Y g:i A') }}</span></p>
+                    <p class="text-sm"><span class="font-medium text-gray-700">Categories:</span> <span class="text-gray-900">{{ news.categories|length }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
