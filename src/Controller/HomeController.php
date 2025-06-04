@@ -14,6 +14,7 @@ class HomeController extends AbstractController
     public function index(CategoryRepository $categoryRepository, NewsRepository $newsRepository): Response
     {
         $categories = $categoryRepository->findAll();
+            
         $categoriesWithNews = [];
 
         foreach ($categories as $category) {

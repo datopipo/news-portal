@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 #[AsCommand(
     name: 'app:setup-news-images',
-    description: 'Sets up images for news articles',
+    description: 'Set up news images by copying them from original directory to uploads directory',
 )]
 class SetupNewsImagesCommand extends Command
 {
@@ -24,7 +24,7 @@ class SetupNewsImagesCommand extends Command
     {
         parent::__construct();
         $this->uploadDir = $kernel->getProjectDir() . '/public/uploads/pictures';
-        $this->originalDir = $this->uploadDir . '/original';
+        $this->originalDir = $kernel->getProjectDir() . '/public/uploads/pictures/original';
         $this->filesystem = new Filesystem();
     }
 
@@ -33,36 +33,33 @@ class SetupNewsImagesCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         // Create directories if they don't exist
-        if (!$this->filesystem->exists($this->uploadDir)) {
-            $this->filesystem->mkdir($this->uploadDir);
-        }
-        if (!$this->filesystem->exists($this->originalDir)) {
-            $this->filesystem->mkdir($this->originalDir);
-        }
+        $this->filesystem->mkdir([$this->uploadDir, $this->originalDir]);
 
-        // Map of fixture image names to original images
+        // Map of fixture images to original images
         $imageMap = [
             'ai-breakthrough.jpg' => 'majorana1-1260x708-v2-1024x575-684034d960c9e.jpg',
-            'world-cup.jpg' => '2025-Oscars-1030x580-68407d2a59259.jpg',
-            'climate-summit.jpg' => '5ZD3FGEX2JJU7FZSN2FDIIXFQ4-68407c60b12a6.jpg',
-            'tech-product.jpg' => 'images-68407cc6004a8.jpg',
-            'economy.jpg' => 'stock-market-data-with-uptrend-vector-68407cab284d6.jpg'
+            'world-cup.jpg' => '5ZD3FGEX2JJU7FZSN2FDIIXFQ4-68407c60b12a6.jpg',
+            'climate-summit.jpg' => 'images-68407cc6004a8.jpg',
+            'tech-product.jpg' => '2025-Oscars-1030x580-68407d2a59259.jpg',
+            'economy.jpg' => 'stock-market-data-with-uptrend-vector-68407cab284d6.jpg',
         ];
 
-        foreach ($imageMap as $targetName => $sourceName) {
-            $sourcePath = $this->originalDir . '/' . $sourceName;
-            $targetPath = $this->uploadDir . '/' . $targetName;
+        foreach ($imageMap as $fixtureImage => $originalImage) {
+            $sourcePath = $this->originalDir . '/' . $originalImage;
+            $targetPath = $this->uploadDir . '/' . $fixtureImage;
 
-            if ($this->filesystem->exists($sourcePath)) {
-                $this->filesystem->copy($sourcePath, $targetPath, true);
-                $io->success(sprintf('Copied %s to %s', $sourceName, $targetName));
-            } else {
-                $io->error(sprintf('Source image %s not found in %s', $sourceName, $this->originalDir));
-                $io->note('Please make sure all original images are placed in the original directory.');
+            if (!$this->filesystem->exists($sourcePath)) {
+                $io->error(sprintf('Source image not found: %s', $sourcePath));
+                continue;
+            }
+
+            try {
+                $this->filesystem->copy($sourcePath, $targetPath);
+                $io->success(sprintf('Copied %s to %s', $originalImage, $fixtureImage));
+            } catch (\Exception $e) {
+                $io->error(sprintf('Failed to copy %s: %s', $originalImage, $e->getMessage()));
             }
         }
-
-        $io->success('News images setup completed successfully!');
 
         return Command::SUCCESS;
     }

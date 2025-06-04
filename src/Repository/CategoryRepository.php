@@ -19,6 +19,7 @@ class CategoryRepository extends ServiceEntityRepository
     public function findAllWithRecentNews(): array
     {
         return $this->createQueryBuilder('c')
+            ->select('c.id', 'c.title')
             ->leftJoin('c.news', 'n')
             ->addSelect('n')
             ->orderBy('c.title', 'ASC')
@@ -29,6 +30,7 @@ class CategoryRepository extends ServiceEntityRepository
     public function findByIdWithNews(int $id): ?Category
     {
         return $this->createQueryBuilder('c')
+            ->select('c.id', 'c.title')
             ->leftJoin('c.news', 'n')
             ->addSelect('n')
             ->where('c.id = :id')
