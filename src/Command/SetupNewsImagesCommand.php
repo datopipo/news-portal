@@ -24,7 +24,7 @@ class SetupNewsImagesCommand extends Command
     {
         parent::__construct();
         $this->uploadDir = $kernel->getProjectDir() . '/public/uploads/pictures';
-        $this->originalDir = $kernel->getProjectDir() . '/public/uploads/pictures/original';
+        $this->originalDir = $kernel->getProjectDir() . '/public/uploads/pictures';
         $this->filesystem = new Filesystem();
     }
 

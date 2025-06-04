@@ -16,7 +16,6 @@
 ###> news-portal ###
 # Ignore copied images but keep original ones
 /public/uploads/pictures/*.jpg
-!/public/uploads/pictures/original/
 .DS_Store
 **/.DS_Store
 ###< news-portal ###

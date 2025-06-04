@@ -213,7 +213,7 @@ For issues and questions:
 
 After pulling the project and running `composer install`, you need to set up the images for news articles:
 
-1. Place the original images in `public/uploads/pictures/original/`:
+1. Place the original images in `public/uploads/pictures/`:
    - `majorana1-1260x708-v2-1024x575-684034d960c9e.jpg` (for AI breakthrough)
    - `2025-Oscars-1030x580-68407d2a59259.jpg` (for World Cup)
    - `5ZD3FGEX2JJU7FZSN2FDIIXFQ4-68407c60b12a6.jpg` (for Climate Summit)
