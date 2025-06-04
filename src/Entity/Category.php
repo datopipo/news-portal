@@ -30,6 +30,9 @@ class Category
     )]
     private ?string $title = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $description = null;
+
     #[ORM\ManyToMany(targetEntity: News::class, mappedBy: 'categories')]
     private Collection $news;
 
@@ -51,6 +54,18 @@ class Category
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

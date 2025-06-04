@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
 
 #[ORM\Entity(repositoryClass: NewsRepository::class)]
 class News
@@ -50,13 +51,15 @@ class News
     private ?\DateTimeInterface $insertDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    private ?string $picture = null;
+
     #[Assert\Image(
         maxSize: AppConstants::MAX_FILE_SIZE,
         mimeTypes: AppConstants::ALLOWED_IMAGE_TYPES,
         mimeTypesMessage: AppConstants::MESSAGES['news']['image_type'],
         maxSizeMessage: AppConstants::MESSAGES['news']['image_size']
     )]
-    private ?string $picture = null;
+    private ?File $pictureFile = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'news')]
     #[Assert\Count(
@@ -140,6 +143,18 @@ class News
     public function setPicture(?string $picture): static
     {
         $this->picture = $picture;
+
+        return $this;
+    }
+
+    public function getPictureFile(): ?File
+    {
+        return $this->pictureFile;
+    }
+
+    public function setPictureFile(?File $pictureFile): static
+    {
+        $this->pictureFile = $pictureFile;
 
         return $this;
     }

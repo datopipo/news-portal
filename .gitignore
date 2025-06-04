@@ -1,4 +1,3 @@
-
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -13,3 +12,9 @@
 /.phpcs-cache
 /phpcs.xml
 ###< squizlabs/php_codesniffer ###
+
+###> news-portal ###
+# Ignore copied images but keep original ones
+/public/uploads/pictures/*.jpg
+!/public/uploads/pictures/original/
+###< news-portal ###

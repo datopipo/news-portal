@@ -81,6 +81,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "*",
         "squizlabs/php_codesniffer": "^3.13",
         "symfony/maker-bundle": "^1.63"
     }

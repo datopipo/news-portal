@@ -207,4 +207,37 @@ This project is open source and available under the MIT License.
 For issues and questions:
 - Check the troubleshooting section
 - Review Symfony documentation
-- Create an issue in the project repository 
+- Create an issue in the project repository
+
+## Image Setup
+
+After pulling the project and running `composer install`, you need to set up the images for news articles:
+
+1. Place the original images in `public/uploads/pictures/original/`:
+   - `majorana1-1260x708-v2-1024x575-684034d960c9e.jpg` (for AI breakthrough)
+   - `2025-Oscars-1030x580-68407d2a59259.jpg` (for World Cup)
+   - `5ZD3FGEX2JJU7FZSN2FDIIXFQ4-68407c60b12a6.jpg` (for Climate Summit)
+   - `images-68407cc6004a8.jpg` (for Tech Product)
+   - `stock-market-data-with-uptrend-vector-68407cab284d6.jpg` (for Economy)
+
+2. Run the image setup command:
+   ```bash
+   php bin/console app:setup-news-images
+   ```
+
+This will copy the original images to the correct filenames used by the fixtures.
+
+## Development
+
+1. Clone the repository
+2. Run `composer install`
+3. Set up images (see above)
+4. Run migrations and load fixtures:
+   ```bash
+   php bin/console doctrine:migrations:migrate
+   php bin/console doctrine:fixtures:load
+   ```
+5. Start the development server:
+   ```bash
+   symfony server:start
+   ``` 
