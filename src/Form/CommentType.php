@@ -47,6 +47,10 @@ class CommentType extends AbstractType
                     new Email([
                         'message' => 'Please enter a valid email address',
                     ]),
+                    new Length([
+                        'max' => 180,
+                        'maxMessage' => 'Email should not exceed {{ limit }} characters',
+                    ]),
                 ],
             ])
             ->add('content', TextareaType::class, [

@@ -19,11 +19,11 @@ security:
             lazy: true
             provider: users_in_memory
             form_login:
-                login_path: admin_login
-                check_path: admin_login
-                default_target_path: admin_dashboard
+                login_path: app_admin_login
+                check_path: app_admin_login
+                default_target_path: app_admin_dashboard
             logout:
-                path: admin_logout
+                path: app_logout
                 target: app_home
         main:
             lazy: true

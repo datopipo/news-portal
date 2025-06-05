@@ -22,7 +22,7 @@ class NewsRepository extends ServiceEntityRepository
 
     public function findRecentByCategory(Category $category, int $limit = 3): array
     {
-        return $this->createQueryBuilder('n')
+        return $this->createBaseQuery()
             ->leftJoin('n.categories', 'c')
             ->where('c.id = :categoryId')
             ->setParameter('categoryId', $category->getId())
@@ -32,24 +32,9 @@ class NewsRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findPaginatedByCategory(Category $category, int $page = 1, int $limit = 10): Paginator
-    {
-        $query = $this->createQueryBuilder('n')
-            ->leftJoin('n.categories', 'c')
-            ->leftJoin('n.comments', 'comments')
-            ->where('c.id = :categoryId')
-            ->setParameter('categoryId', $category->getId())
-            ->orderBy('n.insertDate', 'DESC')
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery();
-
-        return new Paginator($query);
-    }
-
     public function findTopByViews(int $limit = 10): array
     {
-        return $this->createQueryBuilder('n')
+        return $this->createBaseQuery()
             ->orderBy('n.viewCount', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
@@ -58,11 +43,39 @@ class NewsRepository extends ServiceEntityRepository
 
     public function findLatest(int $limit = 10): array
     {
-        return $this->createQueryBuilder('n')
+        return $this->createBaseQuery()
             ->orderBy('n.insertDate', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findAllPaginated(int $page = 1, int $limit = 10): Paginator
+    {
+        $query = $this->createBaseQuery()
+            ->orderBy('n.insertDate', 'DESC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery();
+
+        return new Paginator($query);
+    }
+
+    public function findById(int $id): ?News
+    {
+        return $this->createBaseQuery()
+            ->where('n.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    private function createBaseQuery()
+    {
+        return $this->createQueryBuilder('n')
+            ->addSelect('categories', 'comments')
+            ->leftJoin('n.categories', 'categories')
+            ->leftJoin('n.comments', 'comments');
     }
 }
  

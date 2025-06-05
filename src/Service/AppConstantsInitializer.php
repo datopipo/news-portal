@@ -21,6 +21,8 @@ class AppConstantsInitializer
             return;
         }
 
+        // Legacy support for AppConstants static pattern
+        // New constants classes use dependency injection instead
         AppConstants::setParameterBag($this->params);
     }
 }

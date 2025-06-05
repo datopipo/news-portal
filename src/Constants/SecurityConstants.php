@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Constants;
 
+use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class SecurityConstants
@@ -28,7 +29,7 @@ class SecurityConstants
     {
         try {
             return $this->params->get('app.security.' . $key);
-        } catch (\Exception $e) {
+        } catch (ParameterNotFoundException $e) {
             return self::DEFAULTS[$key] ?? null;
         }
     }

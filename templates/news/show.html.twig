@@ -60,9 +60,17 @@
 
             <!-- Comments Section -->
             <section class="comments-section">
-                <h3 class="text-2xl font-bold text-gray-900 mb-6">
-                    Comments ({{ news.comments|length }})
-                </h3>
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">
+                        Comments ({{ news.comments|length }})
+                    </h3>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_admin_comment_index') }}" 
+                           class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200">
+                            🛠️ Manage Comments
+                        </a>
+                    {% endif %}
+                </div>
 
                 <!-- Add Comment Form -->
                 <div class="bg-white rounded-lg shadow-md mb-8">

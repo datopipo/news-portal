@@ -7,7 +7,6 @@ namespace App\Entity;
 use App\Repository\CommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
@@ -18,31 +17,9 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Author name cannot be blank')]
-    #[Assert\Length(
-        min: 2,
-        max: 255,
-        minMessage: 'Author name must be at least {{ limit }} characters long',
-        maxMessage: 'Author name cannot be longer than {{ limit }} characters'
-    )]
-    #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9\s\-]+$/',
-        message: 'Author name can only contain letters, numbers, spaces and hyphens'
-    )]
     private ?string $authorName = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'Comment content cannot be blank')]
-    #[Assert\Length(
-        min: 10,
-        max: 1000,
-        minMessage: 'Comment must be at least {{ limit }} characters long',
-        maxMessage: 'Comment cannot be longer than {{ limit }} characters'
-    )]
-    #[Assert\Regex(
-        pattern: '/^[^<>]*$/',
-        message: 'HTML tags are not allowed in comments'
-    )]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -53,11 +30,6 @@ class Comment
     private ?News $news = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Email(message: 'Please enter a valid email address')]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: 'Email cannot be longer than {{ limit }} characters'
-    )]
     private ?string $email = null;
 
     public function __construct()

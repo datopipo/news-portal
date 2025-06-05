@@ -12,7 +12,6 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class NewsFixtures extends Fixture implements DependentFixtureInterface
 {

@@ -11,6 +11,7 @@ class PaginationConstants
     private const DEFAULTS = [
         'items_per_page' => 10,
         'max_pages' => 100,
+        'default_page' => 1,
         'page_range' => 2
     ];
 
@@ -36,6 +37,16 @@ class PaginationConstants
     public function getMaxPages(): int
     {
         return (int) $this->getParam('max_pages');
+    }
+
+    public function getDefaultPage(): int
+    {
+        return (int) $this->getParam('default_page');
+    }
+
+    public function getMaxPageSize(): int
+    {
+        return $this->getMaxPages();
     }
 
     public function getPageRange(): int

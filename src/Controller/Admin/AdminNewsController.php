@@ -46,7 +46,7 @@ class AdminNewsController extends AbstractCrudController
             'News created successfully!',
             'app_admin_news_index',
             function($form, $news) {
-                $this->fileUploadService->handleFormUpload($form, 'pictureFile', $news, 'setPicture');
+                $this->fileUploadService->handleFormUpload($form, 'imageFile', $news, 'setPicture');
             }
         );
     }
@@ -70,7 +70,7 @@ class AdminNewsController extends AbstractCrudController
             'News updated successfully!',
             'app_admin_news_index',
             function($form, $news) {
-                $this->fileUploadService->handleFormUpload($form, 'pictureFile', $news, 'setPicture');
+                $this->fileUploadService->handleFormUpload($form, 'imageFile', $news, 'setPicture');
             }
         );
     }

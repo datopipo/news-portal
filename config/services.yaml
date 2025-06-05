@@ -5,6 +5,9 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     pictures_directory: '%kernel.project_dir%/public/uploads/pictures'
+    stats_email: '%env(default::STATS_EMAIL)%'
+    from_email: '%env(default:default_from_email:FROM_EMAIL)%'
+    default_from_email: 'noreply@newsportal.com'
     app:
         news:
             title:
@@ -55,15 +58,16 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # Configure the weekly stats command
-    App\Command\SendWeeklyStatsCommand:
-        arguments:
-            $statsEmail: '%env(STATS_EMAIL)%'
-
     # Configure FileUploadService with upload directory
     App\Service\FileUploadService:
         arguments:
             $uploadDirectory: '%pictures_directory%'
+
+    # Configure WeeklyStatsEmailService
+    App\Service\WeeklyStatsEmailService:
+        arguments:
+            $statsEmail: '%stats_email%'
+            $fromEmail: '%from_email%'
 
     # Configure AppConstantsInitializer
     App\Service\AppConstantsInitializer:
