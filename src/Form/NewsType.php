@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\Entity\Category;
 use App\Entity\News;
+use App\Constants\AppConstants;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -14,7 +15,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
-use App\Constants\AppConstants;
 
 class NewsType extends AbstractType
 {
@@ -25,7 +25,9 @@ class NewsType extends AbstractType
                 'label' => 'Title',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Enter news title'
+                    'placeholder' => 'Enter news title',
+                    'minlength' => AppConstants::getNewsTitleMinLength(),
+                    'maxlength' => AppConstants::getNewsTitleMaxLength()
                 ]
             ])
             ->add('shortDescription', TextareaType::class, [
@@ -33,7 +35,9 @@ class NewsType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 3,
-                    'placeholder' => 'Enter short description (max 500 characters)'
+                    'placeholder' => 'Enter short description (max 500 characters)',
+                    'minlength' => AppConstants::getNewsShortDescMinLength(),
+                    'maxlength' => AppConstants::getNewsShortDescMaxLength()
                 ]
             ])
             ->add('content', TextareaType::class, [
@@ -41,18 +45,20 @@ class NewsType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 10,
-                    'placeholder' => 'Enter full content'
+                    'placeholder' => 'Enter full content',
+                    'minlength' => AppConstants::getNewsContentMinLength()
                 ]
             ])
             ->add('pictureFile', FileType::class, [
-                'label' => 'Picture',
-                'mapped' => false,
+                'label' => 'News Image',
                 'required' => false,
+                'mapped' => false,
                 'constraints' => [
                     new File([
-                        'maxSize' => AppConstants::MAX_FILE_SIZE,
-                        'mimeTypes' => AppConstants::ALLOWED_IMAGE_TYPES,
-                        'mimeTypesMessage' => 'Please upload a valid image file (JPEG, PNG, GIF)',
+                        'maxSize' => AppConstants::getMaxFileSize(),
+                        'mimeTypes' => AppConstants::getAllowedImageTypes(),
+                        'mimeTypesMessage' => AppConstants::getMessages()['news']['image_type'],
+                        'maxSizeMessage' => AppConstants::getMessages()['news']['image_size']
                     ])
                 ],
                 'attr' => [
@@ -63,13 +69,11 @@ class NewsType extends AbstractType
                 'class' => Category::class,
                 'choice_label' => 'title',
                 'multiple' => true,
-                'expanded' => false,
+                'expanded' => true,
                 'label' => 'Categories',
                 'attr' => [
-                    'class' => 'form-select',
-                    'size' => '5'
-                ],
-                'help' => 'Hold Ctrl/Cmd to select multiple categories'
+                    'class' => 'form-check'
+                ]
             ]);
     }
 
@@ -77,6 +81,9 @@ class NewsType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => News::class,
+            'csrf_protection' => true,
+            'csrf_field_name' => '_csrf_token',
+            'csrf_token_id' => AppConstants::getCsrfTokenIdNews()
         ]);
     }
 }

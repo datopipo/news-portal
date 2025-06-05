@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\Entity\Category;
 use App\Entity\News;
+use App\Constants\AppConstants;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -21,7 +22,9 @@ class CategoryType extends AbstractType
                 'label' => 'Category Title',
                 'attr' => [
                     'class' => 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-                    'placeholder' => 'Enter category title'
+                    'placeholder' => 'Enter category title',
+                    'minlength' => AppConstants::getCategoryTitleMinLength(),
+                    'maxlength' => AppConstants::getCategoryTitleMaxLength()
                 ]
             ])
             ->add('news', EntityType::class, [
@@ -43,6 +46,9 @@ class CategoryType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Category::class,
+            'csrf_protection' => true,
+            'csrf_field_name' => '_csrf_token',
+            'csrf_token_id' => AppConstants::getCsrfTokenIdCategory()
         ]);
     }
 }

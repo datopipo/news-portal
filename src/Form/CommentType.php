@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\Comment;
+use App\Constants\AppConstants;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -12,7 +13,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Constants\AppConstants;
 
 class CommentType extends AbstractType
 {
@@ -44,7 +44,7 @@ class CommentType extends AbstractType
                 ]
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Email (optional)',
+                'label' => 'Your Email',
                 'required' => false,
                 'constraints' => [
                     new Assert\Email([
@@ -57,12 +57,12 @@ class CommentType extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Enter your email',
+                    'placeholder' => 'Enter your email (optional)',
                     'maxlength' => AppConstants::EMAIL_MAX_LENGTH
                 ]
             ])
             ->add('content', TextareaType::class, [
-                'label' => 'Comment',
+                'label' => 'Your Comment',
                 'constraints' => [
                     new Assert\NotBlank([
                         'message' => 'Please enter your comment'
@@ -81,7 +81,7 @@ class CommentType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 4,
-                    'placeholder' => 'Write your comment here...',
+                    'placeholder' => 'Enter your comment',
                     'minlength' => AppConstants::COMMENT_CONTENT_MIN_LENGTH,
                     'maxlength' => AppConstants::COMMENT_CONTENT_MAX_LENGTH
                 ]
@@ -94,7 +94,7 @@ class CommentType extends AbstractType
             'data_class' => Comment::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_csrf_token',
-            'csrf_token_id'   => AppConstants::CSRF_TOKEN_ID_COMMENT
+            'csrf_token_id' => AppConstants::getCsrfTokenIdComment()
         ]);
     }
 }
