@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Comment;
+use App\Entity\News;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -22,6 +23,13 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
+        $newsRepository = $manager->getRepository(News::class);
+        $allNews = $newsRepository->findAll();
+        
+        if (empty($allNews)) {
+            return; // No news articles to comment on
+        }
+
         // Create 200 comments
         for ($i = 0; $i < 200; $i++) {
             $comment = new Comment();
@@ -31,11 +39,8 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
             $comment->setCreatedAt($this->faker->dateTimeBetween('-1 year', 'now'));
 
             // Assign to a random news article
-            $newsRef = 'news_' . rand(0, 49); // We have 50 news articles
-            if ($this->hasReference($newsRef)) {
-                $news = $this->getReference($newsRef);
-                $comment->setNews($news);
-            }
+            $randomNews = $allNews[array_rand($allNews)];
+            $comment->setNews($randomNews);
 
             $manager->persist($comment);
         }

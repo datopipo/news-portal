@@ -7,13 +7,13 @@ namespace App\DataFixtures;
 use App\Entity\News;
 use App\Entity\Category;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Component\Filesystem\Filesystem;
 
-class NewsFixtures extends Fixture implements DependentFixtureInterface
+class NewsFixtures extends Fixture
 {
     private Generator $faker;
     private array $imageUrls = [
@@ -32,7 +32,7 @@ class NewsFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $filesystem = new Filesystem();
-        $uploadDir = 'public/uploads/fixtures';
+        $uploadDir = 'public/uploads/pictures';
 
         // Create upload directory if it doesn't exist
         if (!$filesystem->exists($uploadDir)) {
@@ -59,6 +59,7 @@ class NewsFixtures extends Fixture implements DependentFixtureInterface
             $news->setContent($this->faker->paragraphs(3, true));
             $news->setInsertDate($this->faker->dateTimeBetween('-1 year', 'now'));
             $news->setViewCount($this->faker->numberBetween(0, 1000));
+            $news->setPublished($this->faker->boolean(80)); // 80% chance of being published
 
             // Set a random image from our saved images
             if (!empty($savedImages)) {
@@ -67,7 +68,7 @@ class NewsFixtures extends Fixture implements DependentFixtureInterface
             }
 
             // Add 1-3 random categories
-            $categories = $this->getRandomCategories();
+            $categories = $this->getRandomCategories($manager);
             foreach ($categories as $category) {
                 $news->addCategory($category);
             }
@@ -79,25 +80,25 @@ class NewsFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    private function getRandomCategories(): array
+    private function getRandomCategories(ObjectManager $manager): array
     {
+        $categoryRepository = $manager->getRepository(Category::class);
+        $allCategories = $categoryRepository->findAll();
+        
+        if (empty($allCategories)) {
+            return [];
+        }
+        
         $categories = [];
-        $numCategories = rand(1, 3);
+        $numCategories = rand(1, min(3, count($allCategories)));
         
         for ($i = 0; $i < $numCategories; $i++) {
-            $categoryRef = 'category_' . rand(0, 4); // We have 5 categories
-            if ($this->hasReference($categoryRef)) {
-                $categories[] = $this->getReference($categoryRef);
+            $randomCategory = $allCategories[array_rand($allCategories)];
+            if (!in_array($randomCategory, $categories, true)) {
+                $categories[] = $randomCategory;
             }
         }
 
-        return array_unique($categories);
-    }
-
-    public function getDependencies(): array
-    {
-        return [
-            CategoryFixtures::class,
-        ];
+        return $categories;
     }
 } 
