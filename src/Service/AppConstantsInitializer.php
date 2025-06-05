@@ -13,6 +13,10 @@ class AppConstantsInitializer
     public function __construct(
         private readonly ParameterBagInterface $params
     ) {
+    }
+
+    public function onKernelRequest(RequestEvent $event): void
+    {
         AppConstants::setParameterBag($this->params);
     }
 } 

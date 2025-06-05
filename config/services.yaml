@@ -31,4 +31,4 @@ services:
 
     App\Service\AppConstantsInitializer:
         tags:
-            - { name: kernel.event_listener, event: kernel.request, method: __construct }
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
