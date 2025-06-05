@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Constants\AppConstants;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class AppConstantsInitializer
 {

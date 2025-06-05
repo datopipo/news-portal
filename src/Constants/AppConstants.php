@@ -20,155 +20,182 @@ class AppConstants
         if (self::$params === null) {
             throw new \RuntimeException('ParameterBag not set. Call setParameterBag() first.');
         }
-        return self::$params->get('app.' . $key);
+
+        try {
+            return self::$params->get('app.' . $key);
+        } catch (\Exception $e) {
+            // Fallback to default values if parameter is not set
+            return self::getDefaultValue($key);
+        }
+    }
+
+    private static function getDefaultValue(string $key): mixed
+    {
+        $defaults = [
+            'pagination.default_page_size' => 10,
+            'pagination.max_page_size' => 100,
+            'pagination.default_page' => 1,
+            'news.title.min_length' => 3,
+            'news.title.max_length' => 255,
+            'news.short_desc.min_length' => 10,
+            'news.short_desc.max_length' => 500,
+            'news.content.min_length' => 50,
+            'news.recent_limit' => 3,
+            'news.top_limit' => 10,
+            'category.title.min_length' => 2,
+            'category.title.max_length' => 255,
+            'comment.author_name.min_length' => 2,
+            'comment.author_name.max_length' => 100,
+            'comment.content.min_length' => 10,
+            'comment.content.max_length' => 1000,
+            'file.max_size' => '2M',
+            'file.allowed_types' => ['image/jpeg', 'image/png', 'image/gif'],
+            'security.csrf_token.news' => 'news_token',
+            'security.csrf_token.category' => 'category_token',
+            'security.csrf_token.comment' => 'comment_token'
+        ];
+
+        return $defaults[$key] ?? null;
     }
 
     // Pagination
     public static function getDefaultPageSize(): int
     {
-        return self::getParam('pagination.default_page_size');
+        return (int) self::getParam('pagination.default_page_size');
     }
 
     public static function getMaxPageSize(): int
     {
-        return self::getParam('pagination.max_page_size');
+        return (int) self::getParam('pagination.max_page_size');
     }
 
     public static function getDefaultPage(): int
     {
-        return self::getParam('pagination.default_page');
+        return (int) self::getParam('pagination.default_page');
     }
 
     // News
     public static function getNewsTitleMinLength(): int
     {
-        return self::getParam('news.title.min_length');
+        return (int) self::getParam('news.title.min_length');
     }
 
     public static function getNewsTitleMaxLength(): int
     {
-        return self::getParam('news.title.max_length');
+        return (int) self::getParam('news.title.max_length');
     }
 
     public static function getNewsShortDescMinLength(): int
     {
-        return self::getParam('news.short_desc.min_length');
+        return (int) self::getParam('news.short_desc.min_length');
     }
 
     public static function getNewsShortDescMaxLength(): int
     {
-        return self::getParam('news.short_desc.max_length');
+        return (int) self::getParam('news.short_desc.max_length');
     }
 
     public static function getNewsContentMinLength(): int
     {
-        return self::getParam('news.content.min_length');
+        return (int) self::getParam('news.content.min_length');
     }
 
     public static function getNewsRecentLimit(): int
     {
-        return self::getParam('news.recent_limit');
+        return (int) self::getParam('news.recent_limit');
     }
 
     public static function getNewsTopLimit(): int
     {
-        return self::getParam('news.top_limit');
+        return (int) self::getParam('news.top_limit');
     }
 
     // Category
     public static function getCategoryTitleMinLength(): int
     {
-        return self::getParam('category.title.min_length');
+        return (int) self::getParam('category.title.min_length');
     }
 
     public static function getCategoryTitleMaxLength(): int
     {
-        return self::getParam('category.title.max_length');
+        return (int) self::getParam('category.title.max_length');
     }
 
     // Comment
-    public static function getCommentAuthorMinLength(): int
+    public static function getCommentAuthorNameMinLength(): int
     {
-        return self::getParam('comment.author.min_length');
+        return (int) self::getParam('comment.author_name.min_length');
     }
 
-    public static function getCommentAuthorMaxLength(): int
+    public static function getCommentAuthorNameMaxLength(): int
     {
-        return self::getParam('comment.author.max_length');
+        return (int) self::getParam('comment.author_name.max_length');
     }
 
     public static function getCommentContentMinLength(): int
     {
-        return self::getParam('comment.content.min_length');
+        return (int) self::getParam('comment.content.min_length');
     }
 
     public static function getCommentContentMaxLength(): int
     {
-        return self::getParam('comment.content.max_length');
+        return (int) self::getParam('comment.content.max_length');
     }
 
-    // File Upload
-    public static function getMaxFileSize(): int
+    // File
+    public static function getMaxFileSize(): string
     {
-        return self::getParam('file_upload.max_size');
+        return (string) self::getParam('file.max_size');
     }
 
     public static function getAllowedImageTypes(): array
     {
-        return self::getParam('file_upload.allowed_types');
-    }
-
-    public static function getUploadDirectory(): string
-    {
-        return self::getParam('file_upload.directory');
-    }
-
-    // Email
-    public static function getEmailMaxLength(): int
-    {
-        return self::getParam('email.max_length');
-    }
-
-    public static function getWeeklyStatsSubject(): string
-    {
-        return self::getParam('email.weekly_stats.subject');
-    }
-
-    public static function getWeeklyStatsFromEmail(): string
-    {
-        return self::getParam('email.weekly_stats.from');
+        return (array) self::getParam('file.allowed_types');
     }
 
     // Security
-    public static function getCsrfTokenIdComment(): string
-    {
-        return self::getParam('security.csrf_token.comment');
-    }
-
     public static function getCsrfTokenIdNews(): string
     {
-        return self::getParam('security.csrf_token.news');
+        return (string) self::getParam('security.csrf_token.news');
     }
 
     public static function getCsrfTokenIdCategory(): string
     {
-        return self::getParam('security.csrf_token.category');
+        return (string) self::getParam('security.csrf_token.category');
     }
 
-    // Validation
-    public static function getNamePattern(): string
+    public static function getCsrfTokenIdComment(): string
     {
-        return self::getParam('validation.name_pattern');
-    }
-
-    public static function getNoHtmlPattern(): string
-    {
-        return self::getParam('validation.no_html_pattern');
+        return (string) self::getParam('security.csrf_token.comment');
     }
 
     // Messages
     public static function getMessages(): array
     {
-        return self::getParam('messages');
+        return [
+            'news' => [
+                'title_required' => 'News title cannot be blank',
+                'title_length' => 'News title must be between {{ min }} and {{ max }} characters long',
+                'short_desc_required' => 'Short description cannot be blank',
+                'short_desc_length' => 'Short description must be between {{ min }} and {{ max }} characters long',
+                'content_required' => 'Content cannot be blank',
+                'content_min_length' => 'Content must be at least {{ limit }} characters long',
+                'image_type' => 'Please upload a valid image file (JPEG, PNG, or GIF)',
+                'image_size' => 'Image size must be less than {{ limit }}',
+                'category_required' => 'Please select at least one category'
+            ],
+            'category' => [
+                'title_required' => 'Category title cannot be blank',
+                'title_length' => 'Category title must be between {{ min }} and {{ max }} characters long'
+            ],
+            'comment' => [
+                'author_name_required' => 'Your name cannot be blank',
+                'author_name_length' => 'Your name must be between {{ min }} and {{ max }} characters long',
+                'email_required' => 'Email address cannot be blank',
+                'email_invalid' => 'Please enter a valid email address',
+                'content_required' => 'Comment cannot be blank',
+                'content_length' => 'Comment must be between {{ min }} and {{ max }} characters long'
+            ]
+        ];
     }
 } 
