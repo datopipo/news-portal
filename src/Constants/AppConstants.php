@@ -40,14 +40,13 @@ class AppConstants
             'news.short_desc.min_length' => 10,
             'news.short_desc.max_length' => 500,
             'news.content.min_length' => 50,
-            'news.recent_limit' => 3,
-            'news.top_limit' => 10,
             'category.title.min_length' => 2,
             'category.title.max_length' => 255,
             'comment.author_name.min_length' => 2,
             'comment.author_name.max_length' => 100,
             'comment.content.min_length' => 10,
             'comment.content.max_length' => 1000,
+            'comment.email.max_length' => 180,
             'file.max_size' => '2M',
             'file.allowed_types' => ['image/jpeg', 'image/png', 'image/gif'],
             'security.csrf_token.news' => 'news_token',
@@ -56,117 +55,6 @@ class AppConstants
         ];
 
         return $defaults[$key] ?? null;
-    }
-
-    // Pagination
-    public static function getDefaultPageSize(): int
-    {
-        return (int) self::getParam('pagination.default_page_size');
-    }
-
-    public static function getMaxPageSize(): int
-    {
-        return (int) self::getParam('pagination.max_page_size');
-    }
-
-    public static function getDefaultPage(): int
-    {
-        return (int) self::getParam('pagination.default_page');
-    }
-
-    // News
-    public static function getNewsTitleMinLength(): int
-    {
-        return (int) self::getParam('news.title.min_length');
-    }
-
-    public static function getNewsTitleMaxLength(): int
-    {
-        return (int) self::getParam('news.title.max_length');
-    }
-
-    public static function getNewsShortDescMinLength(): int
-    {
-        return (int) self::getParam('news.short_desc.min_length');
-    }
-
-    public static function getNewsShortDescMaxLength(): int
-    {
-        return (int) self::getParam('news.short_desc.max_length');
-    }
-
-    public static function getNewsContentMinLength(): int
-    {
-        return (int) self::getParam('news.content.min_length');
-    }
-
-    public static function getNewsRecentLimit(): int
-    {
-        return (int) self::getParam('news.recent_limit');
-    }
-
-    public static function getNewsTopLimit(): int
-    {
-        return (int) self::getParam('news.top_limit');
-    }
-
-    // Category
-    public static function getCategoryTitleMinLength(): int
-    {
-        return (int) self::getParam('category.title.min_length');
-    }
-
-    public static function getCategoryTitleMaxLength(): int
-    {
-        return (int) self::getParam('category.title.max_length');
-    }
-
-    // Comment
-    public static function getCommentAuthorNameMinLength(): int
-    {
-        return (int) self::getParam('comment.author_name.min_length');
-    }
-
-    public static function getCommentAuthorNameMaxLength(): int
-    {
-        return (int) self::getParam('comment.author_name.max_length');
-    }
-
-    public static function getCommentContentMinLength(): int
-    {
-        return (int) self::getParam('comment.content.min_length');
-    }
-
-    public static function getCommentContentMaxLength(): int
-    {
-        return (int) self::getParam('comment.content.max_length');
-    }
-
-    // File
-    public static function getMaxFileSize(): string
-    {
-        return (string) self::getParam('file.max_size');
-    }
-
-    public static function getAllowedImageTypes(): array
-    {
-        return (array) self::getParam('file.allowed_types');
-    }
-
-    // Security
-    public static function getCsrfTokenIdNews(): string
-    {
-        return (string) self::getParam('security.csrf_token.news');
-    }
-
-    public static function getCsrfTokenIdCategory(): string
-    {
-        return (string) self::getParam('security.csrf_token.category');
-    }
-
-    public static function getCsrfTokenIdComment(): string
-    {
-        return (string) self::getParam('security.csrf_token.comment');
     }
 
     // Messages
@@ -198,4 +86,4 @@ class AppConstants
             ]
         ];
     }
-} 
+}

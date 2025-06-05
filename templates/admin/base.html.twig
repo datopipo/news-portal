@@ -35,26 +35,26 @@
                     
                     <ul class="space-y-2">
                         <li>
-                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'admin_dashboard' ? 'bg-gray-700 text-white' : '' }}" 
-                               href="{{ path('admin_dashboard') }}">
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'app_admin_dashboard' ? 'bg-gray-700 text-white' : '' }}" 
+                               href="{{ path('app_admin_dashboard') }}">
                                 📊 Dashboard
                             </a>
                         </li>
                         <li>
-                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'admin_category' ? 'bg-gray-700 text-white' : '' }}" 
-                               href="{{ path('admin_category_index') }}">
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'app_admin_category' ? 'bg-gray-700 text-white' : '' }}" 
+                               href="{{ path('app_admin_category_index') }}">
                                 📁 Categories
                             </a>
                         </li>
                         <li>
-                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'admin_news' ? 'bg-gray-700 text-white' : '' }}" 
-                               href="{{ path('admin_news_index') }}">
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'app_admin_news' ? 'bg-gray-700 text-white' : '' }}" 
+                               href="{{ path('app_admin_news_index') }}">
                                 📰 News
                             </a>
                         </li>
                         <li>
-                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'admin_comment' ? 'bg-gray-700 text-white' : '' }}" 
-                               href="{{ path('admin_comment_index') }}">
+                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'app_admin_comment' ? 'bg-gray-700 text-white' : '' }}" 
+                               href="{{ path('app_admin_comment_index') }}">
                                 💬 Comments
                             </a>
                         </li>
@@ -71,7 +71,7 @@
                         </li>
                         <li>
                             <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200" 
-                               href="{{ path('admin_logout') }}">
+                               href="{{ path('app_logout') }}">
                                 🚪 Logout
                             </a>
                         </li>

@@ -10,11 +10,11 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 #[Route('/admin')]
 class SecurityController extends AbstractController
 {
-    #[Route('/login', name: 'admin_login')]
+    #[Route('/login', name: 'app_admin_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('admin_dashboard');
+            return $this->redirectToRoute('app_admin_dashboard');
         }
 
         // get the login error if there is one
@@ -28,7 +28,7 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/logout', name: 'admin_logout')]
+    #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {
         // This method can be blank - it will be intercepted by the logout key

@@ -4,98 +4,92 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Constants\SecurityConstants;
 use App\Entity\News;
 use App\Form\NewsType;
 use App\Repository\NewsRepository;
+use App\Service\FileUploadService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use App\Constants\AppConstants;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route('/admin/news')]
-class AdminNewsController extends AbstractController
+class AdminNewsController extends AbstractCrudController
 {
-    private function handleFileUpload($form, $news, $slugger): void
-    {
-        $pictureFile = $form->get('pictureFile')->getData();
-        if (!$pictureFile) {
-            return;
-        }
-
-        $newFilename = $slugger->slug(pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME))
-            . '-' . uniqid() . '.' . $pictureFile->guessExtension();
-
-        try {
-            $pictureFile->move($this->getParameter('pictures_directory'), $newFilename);
-            $news->setPicture($newFilename);
-        } catch (FileException $e) {
-            $this->addFlash('error', 'Error uploading file: ' . $e->getMessage());
-        }
+    public function __construct(
+        private readonly FileUploadService $fileUploadService,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly NewsRepository $newsRepository,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
+        private readonly SecurityConstants $securityConstants
+    ) {
     }
 
-    #[Route('/', name: 'admin_news_index')]
-    public function index(NewsRepository $newsRepository): Response
+    #[Route('/', name: 'app_admin_news_index')]
+    public function index(): Response
     {
-        return $this->render('admin/news/index.html.twig', [
-            'news' => $newsRepository->findAll(),
-        ]);
+        return $this->renderIndex('admin/news/index.html.twig', $this->newsRepository->findAll());
     }
 
-    #[Route('/new', name: 'admin_news_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    #[Route('/new', name: 'app_admin_news_new')]
+    public function new(Request $request): Response
     {
         $news = new News();
-        $form = $this->createForm(NewsType::class, $news);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->handleFileUpload($form, $news, $slugger);
-            $entityManager->persist($news);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'News created successfully!');
-            return $this->redirectToRoute('admin_news_index');
-        }
-
-        return $this->render('admin/news/new.html.twig', [
-            'news' => $news,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleNew(
+            $request,
+            $this->entityManager,
+            $news,
+            NewsType::class,
+            'admin/news/new.html.twig',
+            'News created successfully!',
+            'app_admin_news_index',
+            function($form, $news) {
+                $this->fileUploadService->handleFormUpload($form, 'pictureFile', $news, 'setPicture');
+            }
+        );
     }
 
-    #[Route('/{id}/edit', name: 'admin_news_edit', requirements: ['id' => '\d+'])]
-    public function edit(Request $request, News $news, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    #[Route('/{id}/edit', name: 'app_admin_news_edit', requirements: ['id' => '\d+'])]
+    public function edit(Request $request, int $id): Response
     {
-        $form = $this->createForm(NewsType::class, $news);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->handleFileUpload($form, $news, $slugger);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'News updated successfully!');
-            return $this->redirectToRoute('admin_news_index');
+        $news = $this->newsRepository->find($id);
+        
+        if (!$news) {
+            $this->addFlash('error', 'News item not found.');
+            return $this->redirectToRoute('app_admin_news_index');
         }
 
-        return $this->render('admin/news/edit.html.twig', [
-            'news' => $news,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleEdit(
+            $request,
+            $this->entityManager,
+            $news,
+            NewsType::class,
+            'admin/news/edit.html.twig',
+            'News updated successfully!',
+            'app_admin_news_index',
+            function($form, $news) {
+                $this->fileUploadService->handleFormUpload($form, 'pictureFile', $news, 'setPicture');
+            }
+        );
     }
 
-    #[Route('/{id}/delete', name: 'admin_news_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function delete(Request $request, News $news, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/delete', name: 'app_admin_news_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(Request $request, News $news): Response
     {
-        if ($this->isCsrfTokenValid(AppConstants::getCsrfTokenIdNews() . $news->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($news);
-            $entityManager->flush();
-            $this->addFlash('success', 'News deleted successfully!');
-        }
+        return $this->handleDelete(
+            $request,
+            $this->entityManager,
+            $news,
+            'delete',
+            'News deleted successfully!',
+            'app_admin_news_index'
+        );
+    }
 
-        return $this->redirectToRoute('admin_news_index');
+    protected function getResourceName(): string
+    {
+        return 'news';
     }
 }

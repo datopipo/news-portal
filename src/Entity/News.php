@@ -22,30 +22,30 @@ class News
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: AppConstants::MESSAGES['news']['title_required'])]
+    #[Assert\NotBlank(message: 'News title cannot be blank')]
     #[Assert\Length(
-        min: AppConstants::NEWS_TITLE_MIN_LENGTH,
-        max: AppConstants::NEWS_TITLE_MAX_LENGTH,
-        minMessage: AppConstants::MESSAGES['news']['title_length'],
-        maxMessage: AppConstants::MESSAGES['news']['title_length']
+        min: 3,
+        max: 255,
+        minMessage: 'News title must be between {{ min }} and {{ max }} characters long',
+        maxMessage: 'News title must be between {{ min }} and {{ max }} characters long'
     )]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: AppConstants::MESSAGES['news']['short_desc_required'])]
+    #[Assert\NotBlank(message: 'Short description cannot be blank')]
     #[Assert\Length(
-        min: AppConstants::NEWS_SHORT_DESC_MIN_LENGTH,
-        max: AppConstants::NEWS_SHORT_DESC_MAX_LENGTH,
-        minMessage: AppConstants::MESSAGES['news']['short_desc_length'],
-        maxMessage: AppConstants::MESSAGES['news']['short_desc_length']
+        min: 10,
+        max: 500,
+        minMessage: 'Short description must be between {{ min }} and {{ max }} characters long',
+        maxMessage: 'Short description must be between {{ min }} and {{ max }} characters long'
     )]
     private ?string $shortDescription = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: AppConstants::MESSAGES['news']['content_required'])]
+    #[Assert\NotBlank(message: 'Content cannot be blank')]
     #[Assert\Length(
-        min: AppConstants::NEWS_CONTENT_MIN_LENGTH,
-        minMessage: AppConstants::MESSAGES['news']['content_min_length']
+        min: 50,
+        minMessage: 'Content must be at least {{ limit }} characters long'
     )]
     private ?string $content = null;
 
@@ -56,17 +56,17 @@ class News
     private ?string $picture = null;
 
     #[Assert\Image(
-        maxSize: AppConstants::MAX_FILE_SIZE,
-        mimeTypes: AppConstants::ALLOWED_IMAGE_TYPES,
-        mimeTypesMessage: AppConstants::MESSAGES['news']['image_type'],
-        maxSizeMessage: AppConstants::MESSAGES['news']['image_size']
+        maxSize: '2M',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/gif'],
+        mimeTypesMessage: 'Please upload a valid image file (JPEG, PNG, or GIF)',
+        maxSizeMessage: 'Image size must be less than {{ limit }}'
     )]
     private ?File $pictureFile = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'news')]
     #[Assert\Count(
         min: 1,
-        minMessage: AppConstants::MESSAGES['news']['category_required']
+        minMessage: 'Please select at least one category'
     )]
     private Collection $categories;
 

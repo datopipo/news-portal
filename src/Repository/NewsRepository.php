@@ -47,18 +47,6 @@ class NewsRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
-    public function findWithDetails(int $id): ?News
-    {
-        return $this->createQueryBuilder('n')
-            ->leftJoin('n.categories', 'c')
-            ->leftJoin('n.comments', 'comments')
-            ->addSelect('c', 'comments')
-            ->where('n.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
     public function findTopByViews(int $limit = 10): array
     {
         return $this->createQueryBuilder('n')

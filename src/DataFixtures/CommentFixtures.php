@@ -5,66 +5,39 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Comment;
-use App\Entity\News;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
+use Faker\Generator;
 
 class CommentFixtures extends Fixture implements DependentFixtureInterface
 {
+    private Generator $faker;
+
+    public function __construct()
+    {
+        $this->faker = Factory::create();
+    }
+
     public function load(ObjectManager $manager): void
     {
-        $comments = [
-            [
-                'news' => 'AI Breakthrough in Natural Language Processing',
-                'author' => 'John Smith',
-                'email' => 'john.smith@example.com',
-                'content' => 'This is a fascinating development! I can\'t wait to see how this technology evolves.',
-                'created_at' => new \DateTime('-2 days')
-            ],
-            [
-                'news' => 'AI Breakthrough in Natural Language Processing',
-                'author' => 'Sarah Johnson',
-                'email' => 'sarah.j@example.com',
-                'content' => 'The implications for natural language understanding are enormous. Great article!',
-                'created_at' => new \DateTime('-1 day')
-            ],
-            [
-                'news' => 'World Cup Final: Historic Victory',
-                'author' => 'Mike Wilson',
-                'email' => 'mike.w@example.com',
-                'content' => 'What an incredible match! The underdogs truly deserved this victory.',
-                'created_at' => new \DateTime('-3 days')
-            ],
-            [
-                'news' => 'Global Climate Summit Reaches Historic Agreement',
-                'author' => 'Emma Davis',
-                'email' => 'emma.d@example.com',
-                'content' => 'Finally, some real progress on climate action. Let\'s hope countries follow through.',
-                'created_at' => new \DateTime('-4 days')
-            ],
-            [
-                'news' => 'Tech Giant Announces Revolutionary Product',
-                'author' => 'Alex Brown',
-                'email' => 'alex.b@example.com',
-                'content' => 'The integration of AI with intuitive design is exactly what we needed.',
-                'created_at' => new \DateTime('-2 days')
-            ]
-        ];
-
-        foreach ($comments as $commentData) {
+        // Create 200 comments
+        for ($i = 0; $i < 200; $i++) {
             $comment = new Comment();
-            $comment->setAuthorName($commentData['author']);
-            $comment->setEmail($commentData['email']);
-            $comment->setContent($commentData['content']);
-            $comment->setCreatedAt($commentData['created_at']);
+            $comment->setAuthorName($this->faker->name());
+            $comment->setEmail($this->faker->email());
+            $comment->setContent($this->faker->paragraph(2));
+            $comment->setCreatedAt($this->faker->dateTimeBetween('-1 year', 'now'));
 
-            // Find the news article by title
-            $news = $manager->getRepository(News::class)->findOneBy(['title' => $commentData['news']]);
-            if ($news) {
+            // Assign to a random news article
+            $newsRef = 'news_' . rand(0, 49); // We have 50 news articles
+            if ($this->hasReference($newsRef)) {
+                $news = $this->getReference($newsRef);
                 $comment->setNews($news);
-                $manager->persist($comment);
             }
+
+            $manager->persist($comment);
         }
 
         $manager->flush();

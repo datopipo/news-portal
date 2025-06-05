@@ -42,7 +42,6 @@ class SetupNewsImagesCommand extends Command
             'ai-breakthrough.jpg' => 'majorana1-1260x708-v2-1024x575-684034d960c9e.jpg',
             'world-cup.jpg' => '5ZD3FGEX2JJU7FZSN2FDIIXFQ4-68407c60b12a6.jpg',
             'climate-summit.jpg' => 'images-68407cc6004a8.jpg',
-            'tech-product.jpg' => '2025-Oscars-1030x580-68407d2a59259.jpg',
             'economy.jpg' => 'stock-market-data-with-uptrend-vector-68407cab284d6.jpg',
         ];
 

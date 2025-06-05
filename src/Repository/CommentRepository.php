@@ -19,16 +19,6 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    public function findByNews(News $news): array
-    {
-        return $this->createQueryBuilder('c')
-            ->where('c.news = :news')
-            ->setParameter('news', $news)
-            ->orderBy('c.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-
     public function findAllOrderedByDate(): array
     {
         return $this->createQueryBuilder('c')

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\News;
+use App\Repository\NewsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class NewsViewService
 {
     public function __construct(
+        private readonly NewsRepository $newsRepository,
         private readonly EntityManagerInterface $entityManager
     ) {
     }
@@ -18,11 +20,5 @@ class NewsViewService
     {
         $news->incrementViewCount();
         $this->entityManager->flush();
-    }
-
-    public function getTopViewedNews(int $limit = 10): array
-    {
-        return $this->entityManager->getRepository(News::class)
-            ->findTopByViews($limit);
     }
 } 

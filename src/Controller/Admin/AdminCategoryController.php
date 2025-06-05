@@ -1,77 +1,88 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
+use App\Constants\SecurityConstants;
 use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use App\Constants\AppConstants;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
-#[Route('/admin/categories')]
-class AdminCategoryController extends AbstractController
+#[Route('/admin/category')]
+class AdminCategoryController extends AbstractCrudController
 {
-    #[Route('/', name: 'admin_category_index')]
-    public function index(CategoryRepository $categoryRepository): Response
-    {
-        return $this->render('admin/category/index.html.twig', [
-            'categories' => $categoryRepository->findAll(),
-        ]);
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly CategoryRepository $categoryRepository,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
+        private readonly SecurityConstants $securityConstants
+    ) {
     }
 
-    #[Route('/new', name: 'admin_category_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/', name: 'app_admin_category_index', methods: ['GET'])]
+    public function index(): Response
+    {
+        return $this->renderIndex('admin/category/index.html.twig', $this->categoryRepository->findAll());
+    }
+
+    #[Route('/new', name: 'app_admin_category_new', methods: ['GET', 'POST'])]
+    public function new(Request $request): Response
     {
         $category = new Category();
-        $form = $this->createForm(CategoryType::class, $category);
-        $form->handleRequest($request);
+        return $this->handleNew(
+            $request,
+            $this->entityManager,
+            $category,
+            CategoryType::class,
+            'admin/category/new.html.twig',
+            'Category created successfully.',
+            'app_admin_category_index'
+        );
+    }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($category);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Category created successfully!');
-            return $this->redirectToRoute('admin_category_index');
-        }
-
-        return $this->render('admin/category/new.html.twig', [
+    #[Route('/{id}', name: 'app_admin_category_show', methods: ['GET'])]
+    public function show(Category $category): Response
+    {
+        return $this->render('admin/category/show.html.twig', [
             'category' => $category,
-            'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'admin_category_edit', requirements: ['id' => '\d+'])]
-    public function edit(Request $request, Category $category, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/edit', name: 'app_admin_category_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Category $category): Response
     {
-        $form = $this->createForm(CategoryType::class, $category);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Category updated successfully!');
-            return $this->redirectToRoute('admin_category_index');
-        }
-
-        return $this->render('admin/category/edit.html.twig', [
-            'category' => $category,
-            'form' => $form->createView(),
-        ]);
+        return $this->handleEdit(
+            $request,
+            $this->entityManager,
+            $category,
+            CategoryType::class,
+            'admin/category/edit.html.twig',
+            'Category updated successfully.',
+            'app_admin_category_index'
+        );
     }
 
-    #[Route('/{id}/delete', name: 'admin_category_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}', name: 'app_admin_category_delete', methods: ['POST'])]
+    public function delete(Request $request, Category $category): Response
     {
-        if ($this->isCsrfTokenValid(AppConstants::CSRF_TOKEN_ID_CATEGORY . $category->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($category);
-            $entityManager->flush();
-            $this->addFlash('success', 'Category deleted successfully!');
-        }
+        return $this->handleDelete(
+            $request,
+            $this->entityManager,
+            $category,
+            'delete',
+            'Category deleted successfully.',
+            'app_admin_category_index'
+        );
+    }
 
-        return $this->redirectToRoute('admin_category_index');
+    protected function getResourceName(): string
+    {
+        return 'categories';
     }
 }

@@ -1,36 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
+use App\Constants\SecurityConstants;
 use App\Entity\Comment;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Constants\AppConstants;
 
 #[Route('/admin/comments')]
-class AdminCommentController extends AbstractController
+class AdminCommentController extends AbstractCrudController
 {
-    #[Route('/', name: 'admin_comment_index')]
-    public function index(CommentRepository $commentRepository): Response
-    {
-        return $this->render('admin/comment/index.html.twig', [
-            'comments' => $commentRepository->findAllOrderedByDate(),
-        ]);
+    public function __construct(
+        private readonly CommentRepository $commentRepository,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly SecurityConstants $securityConstants
+    ) {
     }
 
-    #[Route('/{id}/delete', name: 'admin_comment_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function delete(Request $request, Comment $comment, EntityManagerInterface $entityManager): Response
+    #[Route('/', name: 'app_admin_comment_index')]
+    public function index(): Response
     {
-        if ($this->isCsrfTokenValid(AppConstants::CSRF_TOKEN_ID_COMMENT . $comment->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($comment);
-            $entityManager->flush();
-            $this->addFlash('success', 'Comment deleted successfully!');
-        }
+        return $this->renderIndex('admin/comment/index.html.twig', $this->commentRepository->findAllOrderedByDate());
+    }
 
-        return $this->redirectToRoute('admin_comment_index');
+    #[Route('/{id}/delete', name: 'app_admin_comment_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(Request $request, Comment $comment): Response
+    {
+        return $this->handleDelete(
+            $request,
+            $this->entityManager,
+            $comment,
+            'delete',
+            'Comment deleted successfully!',
+            'app_admin_comment_index'
+        );
+    }
+
+    protected function getResourceName(): string
+    {
+        return 'comments';
     }
 }

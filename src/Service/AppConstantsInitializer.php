@@ -17,6 +17,10 @@ class AppConstantsInitializer
 
     public function onKernelRequest(RequestEvent $event): void
     {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
         AppConstants::setParameterBag($this->params);
     }
-} 
+}
