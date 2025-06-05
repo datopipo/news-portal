@@ -220,16 +220,14 @@ class News
         return $this->viewCount;
     }
 
+    public function incrementViewCount(): void
+    {
+        $this->viewCount++;
+    }
+
     public function setViewCount(int $viewCount): static
     {
         $this->viewCount = $viewCount;
-
-        return $this;
-    }
-
-    public function incrementViewCount(): static
-    {
-        $this->viewCount++;
 
         return $this;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\News;
@@ -20,24 +22,18 @@ class AdminNewsController extends AbstractController
     private function handleFileUpload($form, $news, $slugger): void
     {
         $pictureFile = $form->get('pictureFile')->getData();
-        if ($pictureFile) {
-            $originalFilename = pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename . '-' . uniqid() . '.' . $pictureFile->guessExtension();
+        if (!$pictureFile) {
+            return;
+        }
 
-            try {
-                $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/pictures';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0755, true);
-                }
-                $pictureFile->move(
-                    $this->getParameter('pictures_directory'),
-                    $newFilename
-                );
-                $news->setPicture($newFilename);
-            } catch (FileException $e) {
-                $this->addFlash('error', 'Error uploading file: ' . $e->getMessage());
-            }
+        $newFilename = $slugger->slug(pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME))
+            . '-' . uniqid() . '.' . $pictureFile->guessExtension();
+
+        try {
+            $pictureFile->move($this->getParameter('pictures_directory'), $newFilename);
+            $news->setPicture($newFilename);
+        } catch (FileException $e) {
+            $this->addFlash('error', 'Error uploading file: ' . $e->getMessage());
         }
     }
 
@@ -94,7 +90,7 @@ class AdminNewsController extends AbstractController
     #[Route('/{id}/delete', name: 'admin_news_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, News $news, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid(AppConstants::CSRF_TOKEN_ID_NEWS . $news->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid(AppConstants::getCsrfTokenIdNews() . $news->getId(), $request->request->get('_token'))) {
             $entityManager->remove($news);
             $entityManager->flush();
             $this->addFlash('success', 'News deleted successfully!');

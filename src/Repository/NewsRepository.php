@@ -13,30 +13,20 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<News>
  */
-class NewsRepository extends ServiceEntityRepository implements NewsRepositoryInterface
+class NewsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, News::class);
     }
 
-    private function createBaseQueryBuilder(): \Doctrine\ORM\QueryBuilder
+    public function findRecentByCategory(Category $category, int $limit = 3): array
     {
         return $this->createQueryBuilder('n')
             ->leftJoin('n.categories', 'c')
-            ->addSelect('c');
-    }
-
-    private function addOrdering(\Doctrine\ORM\QueryBuilder $qb, string $orderBy = 'insertDate', string $direction = 'DESC'): \Doctrine\ORM\QueryBuilder
-    {
-        return $qb->orderBy('n.' . $orderBy, $direction);
-    }
-
-    public function findRecentByCategory(Category $category, int $limit = 3): array
-    {
-        return $this->createBaseQueryBuilder()
             ->where('c.id = :categoryId')
             ->setParameter('categoryId', $category->getId())
+            ->orderBy('n.insertDate', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -44,11 +34,12 @@ class NewsRepository extends ServiceEntityRepository implements NewsRepositoryIn
 
     public function findPaginatedByCategory(Category $category, int $page = 1, int $limit = 10): Paginator
     {
-        $query = $this->createBaseQueryBuilder()
+        $query = $this->createQueryBuilder('n')
+            ->leftJoin('n.categories', 'c')
             ->leftJoin('n.comments', 'comments')
-            ->addSelect('comments')
             ->where('c.id = :categoryId')
             ->setParameter('categoryId', $category->getId())
+            ->orderBy('n.insertDate', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery();
@@ -58,9 +49,10 @@ class NewsRepository extends ServiceEntityRepository implements NewsRepositoryIn
 
     public function findWithDetails(int $id): ?News
     {
-        return $this->createBaseQueryBuilder()
+        return $this->createQueryBuilder('n')
+            ->leftJoin('n.categories', 'c')
             ->leftJoin('n.comments', 'comments')
-            ->addSelect('comments')
+            ->addSelect('c', 'comments')
             ->where('n.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
@@ -69,24 +61,17 @@ class NewsRepository extends ServiceEntityRepository implements NewsRepositoryIn
 
     public function findTopByViews(int $limit = 10): array
     {
-        return $this->createBaseQueryBuilder()
-            ->addOrderBy('n.viewCount', 'DESC')
-            ->addOrderBy('n.insertDate', 'DESC')
+        return $this->createQueryBuilder('n')
+            ->orderBy('n.viewCount', 'DESC')
             ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findAll(): array
-    {
-        return $this->createBaseQueryBuilder()
             ->getQuery()
             ->getResult();
     }
 
     public function findLatest(int $limit = 10): array
     {
-        return $this->createBaseQueryBuilder()
+        return $this->createQueryBuilder('n')
+            ->orderBy('n.insertDate', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
