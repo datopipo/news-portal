@@ -1,82 +1,174 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Constants;
+
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class AppConstants
 {
+    private static ?ParameterBagInterface $params = null;
+
+    public static function setParameterBag(ParameterBagInterface $params): void
+    {
+        self::$params = $params;
+    }
+
+    private static function getParam(string $key): mixed
+    {
+        if (self::$params === null) {
+            throw new \RuntimeException('ParameterBag not set. Call setParameterBag() first.');
+        }
+        return self::$params->get('app.' . $key);
+    }
+
     // Pagination
-    public const DEFAULT_PAGE_SIZE = 10;
-    public const MAX_PAGE_SIZE = 50;
-    public const DEFAULT_PAGE = 1;
+    public static function getDefaultPageSize(): int
+    {
+        return self::getParam('pagination.default_page_size');
+    }
+
+    public static function getMaxPageSize(): int
+    {
+        return self::getParam('pagination.max_page_size');
+    }
+
+    public static function getDefaultPage(): int
+    {
+        return self::getParam('pagination.default_page');
+    }
 
     // News
-    public const NEWS_TITLE_MIN_LENGTH = 3;
-    public const NEWS_TITLE_MAX_LENGTH = 255;
-    public const NEWS_SHORT_DESC_MIN_LENGTH = 10;
-    public const NEWS_SHORT_DESC_MAX_LENGTH = 500;
-    public const NEWS_CONTENT_MIN_LENGTH = 50;
-    public const NEWS_RECENT_LIMIT = 3;
-    public const NEWS_TOP_LIMIT = 10;
+    public static function getNewsTitleMinLength(): int
+    {
+        return self::getParam('news.title.min_length');
+    }
+
+    public static function getNewsTitleMaxLength(): int
+    {
+        return self::getParam('news.title.max_length');
+    }
+
+    public static function getNewsShortDescMinLength(): int
+    {
+        return self::getParam('news.short_desc.min_length');
+    }
+
+    public static function getNewsShortDescMaxLength(): int
+    {
+        return self::getParam('news.short_desc.max_length');
+    }
+
+    public static function getNewsContentMinLength(): int
+    {
+        return self::getParam('news.content.min_length');
+    }
+
+    public static function getNewsRecentLimit(): int
+    {
+        return self::getParam('news.recent_limit');
+    }
+
+    public static function getNewsTopLimit(): int
+    {
+        return self::getParam('news.top_limit');
+    }
 
     // Category
-    public const CATEGORY_TITLE_MIN_LENGTH = 2;
-    public const CATEGORY_TITLE_MAX_LENGTH = 255;
+    public static function getCategoryTitleMinLength(): int
+    {
+        return self::getParam('category.title.min_length');
+    }
+
+    public static function getCategoryTitleMaxLength(): int
+    {
+        return self::getParam('category.title.max_length');
+    }
 
     // Comment
-    public const COMMENT_AUTHOR_MIN_LENGTH = 2;
-    public const COMMENT_AUTHOR_MAX_LENGTH = 255;
-    public const COMMENT_CONTENT_MIN_LENGTH = 10;
-    public const COMMENT_CONTENT_MAX_LENGTH = 1000;
+    public static function getCommentAuthorMinLength(): int
+    {
+        return self::getParam('comment.author.min_length');
+    }
+
+    public static function getCommentAuthorMaxLength(): int
+    {
+        return self::getParam('comment.author.max_length');
+    }
+
+    public static function getCommentContentMinLength(): int
+    {
+        return self::getParam('comment.content.min_length');
+    }
+
+    public static function getCommentContentMaxLength(): int
+    {
+        return self::getParam('comment.content.max_length');
+    }
 
     // File Upload
-    public const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-    public const ALLOWED_IMAGE_TYPES = [
-        'image/jpeg',
-        'image/png',
-        'image/gif'
-    ];
-    public const UPLOAD_DIRECTORY = 'uploads/pictures';
+    public static function getMaxFileSize(): int
+    {
+        return self::getParam('file_upload.max_size');
+    }
+
+    public static function getAllowedImageTypes(): array
+    {
+        return self::getParam('file_upload.allowed_types');
+    }
+
+    public static function getUploadDirectory(): string
+    {
+        return self::getParam('file_upload.directory');
+    }
 
     // Email
-    public const EMAIL_MAX_LENGTH = 255;
-    public const WEEKLY_STATS_SUBJECT = 'Weekly News Statistics - Top 10 Articles';
-    public const WEEKLY_STATS_FROM_EMAIL = 'noreply@newsportal.com';
+    public static function getEmailMaxLength(): int
+    {
+        return self::getParam('email.max_length');
+    }
+
+    public static function getWeeklyStatsSubject(): string
+    {
+        return self::getParam('email.weekly_stats.subject');
+    }
+
+    public static function getWeeklyStatsFromEmail(): string
+    {
+        return self::getParam('email.weekly_stats.from');
+    }
 
     // Security
-    public const CSRF_TOKEN_ID_COMMENT = 'comment_item';
-    public const CSRF_TOKEN_ID_NEWS = 'news_item';
-    public const CSRF_TOKEN_ID_CATEGORY = 'category_item';
+    public static function getCsrfTokenIdComment(): string
+    {
+        return self::getParam('security.csrf_token.comment');
+    }
+
+    public static function getCsrfTokenIdNews(): string
+    {
+        return self::getParam('security.csrf_token.news');
+    }
+
+    public static function getCsrfTokenIdCategory(): string
+    {
+        return self::getParam('security.csrf_token.category');
+    }
 
     // Validation
-    public const NAME_PATTERN = '/^[a-zA-Z0-9\s\-]+$/';
-    public const NO_HTML_PATTERN = '/^[^<>]*$/';
+    public static function getNamePattern(): string
+    {
+        return self::getParam('validation.name_pattern');
+    }
+
+    public static function getNoHtmlPattern(): string
+    {
+        return self::getParam('validation.no_html_pattern');
+    }
 
     // Messages
-    public const MESSAGES = [
-        'news' => [
-            'title_required' => 'Please enter a title',
-            'title_length' => 'Title must be between {{ limit }} and {{ limit }} characters',
-            'short_desc_required' => 'Please enter a short description',
-            'short_desc_length' => 'Short description must be between {{ limit }} and {{ limit }} characters',
-            'content_required' => 'Please enter the content',
-            'content_min_length' => 'Content must be at least {{ limit }} characters long',
-            'image_type' => 'Please upload a valid image file (JPEG, PNG, GIF)',
-            'image_size' => 'Image size must be less than 5MB',
-            'category_required' => 'Please select at least one category'
-        ],
-        'category' => [
-            'title_required' => 'Please enter a category title',
-            'title_length' => 'Category title must be between {{ limit }} and {{ limit }} characters'
-        ],
-        'comment' => [
-            'author_required' => 'Please enter your name',
-            'author_length' => 'Name must be between {{ limit }} and {{ limit }} characters',
-            'author_pattern' => 'Name can only contain letters, numbers, spaces and hyphens',
-            'email_invalid' => 'Please enter a valid email address',
-            'email_length' => 'Email cannot be longer than {{ limit }} characters',
-            'content_required' => 'Please enter your comment',
-            'content_length' => 'Comment must be between {{ limit }} and {{ limit }} characters',
-            'content_pattern' => 'HTML tags are not allowed in comments'
-        ]
-    ];
+    public static function getMessages(): array
+    {
+        return self::getParam('messages');
+    }
 } 
