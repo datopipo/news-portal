@@ -16,12 +16,17 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
-    public function findAllWithRecentNews(): array
+    private function createBaseQueryBuilder(): \Doctrine\ORM\QueryBuilder
     {
         return $this->createQueryBuilder('c')
             ->select('c.id', 'c.title')
             ->leftJoin('c.news', 'n')
-            ->addSelect('n')
+            ->addSelect('n');
+    }
+
+    public function findAllWithRecentNews(): array
+    {
+        return $this->createBaseQueryBuilder()
             ->orderBy('c.title', 'ASC')
             ->getQuery()
             ->getResult();
@@ -29,10 +34,7 @@ class CategoryRepository extends ServiceEntityRepository
 
     public function findByIdWithNews(int $id): ?Category
     {
-        return $this->createQueryBuilder('c')
-            ->select('c.id', 'c.title')
-            ->leftJoin('c.news', 'n')
-            ->addSelect('n')
+        return $this->createBaseQueryBuilder()
             ->where('c.id = :id')
             ->setParameter('id', $id)
             ->orderBy('n.insertDate', 'DESC')

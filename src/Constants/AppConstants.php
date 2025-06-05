@@ -54,30 +54,29 @@ class AppConstants
     // Messages
     public const MESSAGES = [
         'news' => [
-            'title_required' => 'Title cannot be blank',
-            'title_length' => 'Title must be between {{ min }} and {{ max }} characters',
-            'short_desc_required' => 'Short description cannot be blank',
-            'short_desc_length' => 'Short description must be between {{ min }} and {{ max }} characters',
-            'content_required' => 'Content cannot be blank',
+            'title_required' => 'Please enter a title',
+            'title_length' => 'Title must be between {{ limit }} and {{ limit }} characters',
+            'short_desc_required' => 'Please enter a short description',
+            'short_desc_length' => 'Short description must be between {{ limit }} and {{ limit }} characters',
+            'content_required' => 'Please enter the content',
             'content_min_length' => 'Content must be at least {{ limit }} characters long',
-            'category_required' => 'You must select at least one category',
-            'image_size' => 'The image size should not exceed 5MB',
-            'image_type' => 'Please upload a valid image file (JPEG, PNG, GIF)'
+            'image_type' => 'Please upload a valid image file (JPEG, PNG, GIF)',
+            'image_size' => 'Image size must be less than 5MB',
+            'category_required' => 'Please select at least one category'
         ],
         'category' => [
-            'title_required' => 'Category title cannot be blank',
-            'title_length' => 'Category title must be between {{ min }} and {{ max }} characters',
-            'title_pattern' => 'Category title can only contain letters, numbers, spaces and hyphens'
+            'title_required' => 'Please enter a category title',
+            'title_length' => 'Category title must be between {{ limit }} and {{ limit }} characters'
         ],
         'comment' => [
             'author_required' => 'Please enter your name',
-            'author_length' => 'Your name must be between {{ min }} and {{ max }} characters',
-            'author_pattern' => 'Your name can only contain letters, numbers, spaces and hyphens',
-            'content_required' => 'Please enter your comment',
-            'content_length' => 'Your comment must be between {{ min }} and {{ max }} characters',
-            'content_pattern' => 'HTML tags are not allowed in comments',
+            'author_length' => 'Name must be between {{ limit }} and {{ limit }} characters',
+            'author_pattern' => 'Name can only contain letters, numbers, spaces and hyphens',
             'email_invalid' => 'Please enter a valid email address',
-            'email_length' => 'Email cannot be longer than {{ limit }} characters'
+            'email_length' => 'Email cannot be longer than {{ limit }} characters',
+            'content_required' => 'Please enter your comment',
+            'content_length' => 'Comment must be between {{ limit }} and {{ limit }} characters',
+            'content_pattern' => 'HTML tags are not allowed in comments'
         ]
     ];
 } 

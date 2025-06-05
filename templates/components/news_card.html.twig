@@ -1,0 +1,55 @@
+{# News Card Component #}
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    {% if article.picture %}
+        <img src="{{ asset('uploads/pictures/' ~ article.picture) }}" 
+             class="w-full h-48 object-cover" 
+             alt="{{ article.title }}">
+    {% else %}
+        <div class="w-full h-48 bg-gray-100 flex items-center justify-center">
+            <span class="text-4xl text-gray-400">📰</span>
+        </div>
+    {% endif %}
+    
+    <div class="p-6">
+        <h5 class="text-lg font-semibold mb-2">
+            <a href="{{ path('app_news_show', {id: article.id}) }}" 
+               class="text-gray-900 hover:text-blue-600 transition-colors duration-200">
+                {{ article.title }}
+            </a>
+        </h5>
+        
+        <div class="flex items-center text-sm text-gray-500 mb-3">
+            <span>{{ article.insertDate|date('M d, Y') }}</span>
+            <span class="mx-2">•</span>
+            <span>{{ article.viewCount }} views</span>
+            <span class="mx-2">•</span>
+            <span>{{ article.comments|length }} comments</span>
+        </div>
+        
+        <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+            {{ article.shortDescription|length > 120 ? 
+               article.shortDescription|slice(0, 120) ~ '...' : 
+               article.shortDescription }}
+        </p>
+        
+        <div class="flex justify-between items-center">
+            <a href="{{ path('app_news_show', {id: article.id}) }}" 
+               class="inline-block px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200">
+                Read More
+            </a>
+            
+            {% if article.categories|length > 0 %}
+                <div class="flex flex-wrap gap-1">
+                    {% for category in article.categories %}
+                        {% if not currentCategory or category.id != currentCategory.id %}
+                            <a href="{{ path('app_category_show', {id: category.id}) }}" 
+                               class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 transition-colors duration-200">
+                                {{ category.title }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div> 
