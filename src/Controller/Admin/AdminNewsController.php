@@ -12,10 +12,35 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use App\Constants\AppConstants;
 
 #[Route('/admin/news')]
 class AdminNewsController extends AbstractController
 {
+    private function handleFileUpload($form, $news, $slugger): void
+    {
+        $pictureFile = $form->get('pictureFile')->getData();
+        if ($pictureFile) {
+            $originalFilename = pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $pictureFile->guessExtension();
+
+            try {
+                $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/pictures';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                $pictureFile->move(
+                    $this->getParameter('pictures_directory'),
+                    $newFilename
+                );
+                $news->setPicture($newFilename);
+            } catch (FileException $e) {
+                $this->addFlash('error', 'Error uploading file: ' . $e->getMessage());
+            }
+        }
+    }
+
     #[Route('/', name: 'admin_news_index')]
     public function index(NewsRepository $newsRepository): Response
     {
@@ -32,29 +57,7 @@ class AdminNewsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Handle file upload
-            $pictureFile = $form->get('pictureFile')->getData();
-            if ($pictureFile) {
-                $originalFilename = pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $pictureFile->guessExtension();
-
-                try {
-                    $uploadDir = $this->getParameter('kernel.project_dir') .
-                        '/public/uploads/pictures';
-                    if (!is_dir($uploadDir)) {
-                        mkdir($uploadDir, 0755, true);
-                    }
-                    $pictureFile->move(
-                        $this->getParameter('pictures_directory'),
-                        $newFilename
-                    );
-                    $news->setPicture($newFilename);
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Error uploading file: ' . $e->getMessage());
-                }
-            }
-
+            $this->handleFileUpload($form, $news, $slugger);
             $entityManager->persist($news);
             $entityManager->flush();
 
@@ -69,39 +72,13 @@ class AdminNewsController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'admin_news_edit', requirements: ['id' => '\d+'])]
-    public function edit(
-        Request $request,
-        News $news,
-        EntityManagerInterface $entityManager,
-        SluggerInterface $slugger
-    ): Response {
+    public function edit(Request $request, News $news, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
         $form = $this->createForm(NewsType::class, $news);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Handle file upload
-            $pictureFile = $form->get('pictureFile')->getData();
-            if ($pictureFile) {
-                $originalFilename = pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $pictureFile->guessExtension();
-
-                try {
-                    $uploadDir = $this->getParameter('kernel.project_dir') .
-                        '/public/uploads/pictures';
-                    if (!is_dir($uploadDir)) {
-                        mkdir($uploadDir, 0755, true);
-                    }
-                    $pictureFile->move(
-                        $this->getParameter('pictures_directory'),
-                        $newFilename
-                    );
-                    $news->setPicture($newFilename);
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Error uploading file: ' . $e->getMessage());
-                }
-            }
-
+            $this->handleFileUpload($form, $news, $slugger);
             $entityManager->flush();
 
             $this->addFlash('success', 'News updated successfully!');
@@ -117,7 +94,7 @@ class AdminNewsController extends AbstractController
     #[Route('/{id}/delete', name: 'admin_news_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, News $news, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $news->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid(AppConstants::CSRF_TOKEN_ID_NEWS . $news->getId(), $request->request->get('_token'))) {
             $entityManager->remove($news);
             $entityManager->flush();
             $this->addFlash('success', 'News deleted successfully!');

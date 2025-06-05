@@ -18,8 +18,7 @@ use Symfony\Component\Mime\Email;
 class SendWeeklyStatsCommand extends Command
 {
     public function __construct(
-        private readonly NewsRepository  $newsRepository,
-        private readonly MailerInterface $mailer,
+        private readonly NewsRepository $newsRepository,
         private readonly string $statsEmail
     ) {
         parent::__construct();
@@ -41,6 +40,9 @@ class SendWeeklyStatsCommand extends Command
             // Prepare email content
             $emailContent = $this->generateEmailContent($topNews);
 
+            // Get mailer service lazily
+            $mailer = $this->getApplication()->getKernel()->getContainer()->get('mailer.mailer');
+
             // Send email
             $email = (new Email())
                 ->from('noreply@newsportal.com')
@@ -48,7 +50,7 @@ class SendWeeklyStatsCommand extends Command
                 ->subject('Weekly News Statistics - Top 10 Articles')
                 ->html($emailContent);
 
-            $this->mailer->send($email);
+            $mailer->send($email);
 
             $io->success(sprintf('Weekly statistics sent successfully to %s', $this->statsEmail));
         } catch (\Exception $e) {

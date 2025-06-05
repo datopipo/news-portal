@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use App\Constants\AppConstants;
 
 class NewsType extends AbstractType
 {
@@ -47,12 +48,8 @@ class NewsType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new File([
-                        'maxSize' => '5M',
-                        'mimeTypes' => [
-                            'image/jpeg',
-                            'image/png',
-                            'image/gif',
-                        ],
+                        'maxSize' => AppConstants::MAX_FILE_SIZE,
+                        'mimeTypes' => AppConstants::ALLOWED_IMAGE_TYPES,
                         'mimeTypesMessage' => 'Please upload a valid image file (JPEG, PNG, GIF)',
                     ])
                 ],

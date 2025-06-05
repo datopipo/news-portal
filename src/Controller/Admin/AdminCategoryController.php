@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Constants\AppConstants;
 
 #[Route('/admin/categories')]
 class AdminCategoryController extends AbstractController
@@ -65,7 +66,7 @@ class AdminCategoryController extends AbstractController
     #[Route('/{id}/delete', name: 'admin_category_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid(AppConstants::CSRF_TOKEN_ID_CATEGORY . $category->getId(), $request->request->get('_token'))) {
             $entityManager->remove($category);
             $entityManager->flush();
             $this->addFlash('success', 'Category deleted successfully!');
