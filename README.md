@@ -4,19 +4,24 @@ Simple news portal built with **Symfony 7** and **Doctrine 3**.
 
 ## ✨ Features
 
-- Public site: browse articles, categories, comments
-- Admin panel: manage content
-- Authentication, file uploads, responsive UI
+- **Public Site**: Browse articles by category, view comments, post comments
+- **Admin Panel**: Full CRUD for articles, categories, and comment management  
+- **Authentication**: Secure admin login with CSRF protection
+- **File Uploads**: Image upload for news articles
+- **Responsive UI**: Mobile-friendly design with Tailwind CSS
+- **Data Seeding**: Generate sample data with realistic content
+- **Email Stats**: Weekly top 10 news statistics via email
+- **Zero Setup**: Pre-configured environment variables included
 
 ## 🚀 Quick Start
 
 ```bash
-# Install
+# Install dependencies
 composer install
 
 # Setup database
 php bin/console doctrine:database:create
-php bin/console doctrine:schema:create
+php bin/console doctrine:schema:update --force
 
 # Seed with fake data (10 categories, 50 articles, 200 comments)
 php bin/console app:seed-data
@@ -27,6 +32,8 @@ php -S 127.0.0.1:8000 -t public/
 
 **Public**: http://127.0.0.1:8000  
 **Admin**: http://127.0.0.1:8000/admin (admin/admin123)
+
+> ✅ **Ready to go!** All environment variables are pre-configured in `.env.local`
 
 ## 🔧 Commands
 
@@ -48,17 +55,33 @@ php bin/console cache:clear
 
 ## 📧 Email Setup
 
-Configure environment variables for weekly statistics emails:
+Email configuration is **pre-configured** in `.env.local`:
+- `STATS_EMAIL=admin@example.com` - Where weekly stats are sent
+- `FROM_EMAIL=noreply@newsportal.com` - Sender address
+- `MAILER_DSN=null://null` - Uses Symfony's null transport (for development)
+
+**Automated weekly sending** (add to crontab for production):
 ```bash
-MAILER_DSN=smtp://localhost
+0 9 * * 0 php /path/to/project/bin/console app:send-weekly-stats
+```
+
+> 💡 **Note**: Configure `MAILER_DSN` with real SMTP settings for production use
+
+## ⚙️ Pre-configured Environment
+
+The project includes a ready-to-use `.env.local` file with:
+
+```bash
+# Admin credentials (username: admin, password: admin123)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD_HASH=$2y$13$am/.XFWLedqMnDxRo6YSKucUlYBJeuolf1sfrrChV3G8M.MYBF/HG
+
+# Email configuration for weekly stats
 STATS_EMAIL=admin@example.com
 FROM_EMAIL=noreply@newsportal.com
 ```
 
-**Automated weekly sending** (add to crontab):
-```bash
-0 9 * * 0 php /path/to/project/bin/console app:send-weekly-stats
-```
+**No manual setup required!** The app works immediately after `git clone` and `composer install`.
 
 ## 📁 Structure
 
