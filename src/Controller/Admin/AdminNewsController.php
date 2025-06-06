@@ -37,18 +37,35 @@ class AdminNewsController extends AbstractCrudController
     public function new(Request $request): Response
     {
         $news = new News();
-        return $this->handleNew(
-            $request,
-            $this->entityManager,
-            $news,
-            NewsType::class,
-            'admin/news/new.html.twig',
-            'News created successfully!',
-            'app_admin_news_index',
-            function($form, $news) {
-                $this->fileUploadService->handleFormUpload($form, 'imageFile', $news, 'setPicture');
+        $form = $this->createForm(NewsType::class, $news);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if (!$form->isValid()) {
+                // Show form validation errors
+                foreach ($form->getErrors(true) as $error) {
+                    $this->addFlash('error', 'Validation Error: ' . $error->getMessage());
+                }
+            } else {
+                try {
+                    // Handle file upload
+                    $this->fileUploadService->handleFormUpload($form, 'imageFile', $news, 'setPicture');
+                    
+                    $this->entityManager->persist($news);
+                    $this->entityManager->flush();
+
+                    $this->addFlash('success', 'News created successfully!');
+                    return $this->redirectToRoute('app_admin_news_index');
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Error saving news: ' . $e->getMessage());
+                }
             }
-        );
+        }
+
+        return $this->render('admin/news/new.html.twig', [
+            'news' => $news,
+            'form' => $form->createView(),
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'app_admin_news_edit', requirements: ['id' => '\d+'])]
