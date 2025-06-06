@@ -14,6 +14,9 @@ Simple news portal built with **Symfony 7** and **Doctrine 3**.
 # Install
 composer install
 
+# Setup environment variables (REQUIRED)
+cp .env.local.dist .env.local
+
 # Setup database
 php bin/console doctrine:database:create
 php bin/console doctrine:schema:create
@@ -27,6 +30,8 @@ php -S 127.0.0.1:8000 -t public/
 
 **Public**: http://127.0.0.1:8000  
 **Admin**: http://127.0.0.1:8000/admin (admin/admin123)
+
+> ⚠️ **Important**: You must create `.env.local` from the template before running the application, otherwise you'll get "Environment variable not found: ADMIN_USERNAME" error.
 
 ## 🔧 Commands
 
