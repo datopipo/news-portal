@@ -37,11 +37,17 @@ class SeedDataCommand extends Command
         if ($input->getOption('clear')) {
             $io->section('🗑️  Clearing existing data...');
             
-            // Drop and recreate database schema
-            $process = new Process(['php', 'bin/console', 'doctrine:schema:drop', '--force']);
+            // Remove SQLite database file directly (cleaner approach)
+            $dbFile = __DIR__ . '/../../var/data_dev.db';
+            if (file_exists($dbFile)) {
+                unlink($dbFile);
+            }
+            
+            // Recreate database and schema quietly
+            $process = new Process(['php', 'bin/console', 'doctrine:database:create']);
             $process->run();
             
-            $process = new Process(['php', 'bin/console', 'doctrine:schema:create']);
+            $process = new Process(['php', 'bin/console', 'doctrine:schema:create', '--quiet']);
             $process->run();
             
             $io->success('Database cleared and recreated');
