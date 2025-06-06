@@ -28,6 +28,12 @@ class NewsFixtures extends Fixture
             return;
         }
 
+        // Available sample images
+        $sampleImages = [
+            'download-6842462a36368.jpg',
+            '5ZD3FGEX2JJU7FZSN2FDIIXFQ4-68424601abefd.jpg'
+        ];
+
         for ($i = 1; $i <= 50; $i++) {
             $news = new News();
             $news->setTitle($this->faker->sentence(6, true));
@@ -36,11 +42,16 @@ class NewsFixtures extends Fixture
             $news->setInsertDate($this->faker->dateTimeBetween('-6 months'));
             $news->setViewCount($this->faker->numberBetween(0, 1000));
 
+            // Randomly assign an image to 60% of articles
+            if ($this->faker->boolean(60)) {
+                $news->setPicture($this->faker->randomElement($sampleImages));
+            }
+
             $categoryCount = $this->faker->numberBetween(1, 3);
             $selectedCategories = (array) $this->faker->randomElements($categories, $categoryCount);
             
             foreach ($selectedCategories as $category) {
-            $news->addCategory($category);
+                $news->addCategory($category);
             }
 
             if (count($selectedCategories) === 1 && is_array($selectedCategories[0])) {
