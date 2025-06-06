@@ -27,4 +27,10 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # Weekly Statistics Email Service
+    App\Service\WeeklyStatsEmailService:
+        arguments:
+            $statsEmail: '%stats_email%'
+            $fromEmail: '%from_email%'
+
 
