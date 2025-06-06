@@ -48,8 +48,13 @@ class AdminNewsController extends AbstractCrudController
                 }
             } else {
                 try {
-                    // Handle file upload
-                    $this->fileUploadService->handleFormUpload($form, 'imageFile', $news, 'setPicture');
+                    // Handle file upload if present
+                    try {
+                        $this->fileUploadService->handleFormUpload($form, 'imageFile', $news, 'setPicture');
+                    } catch (\Exception $uploadError) {
+                        $this->addFlash('warning', 'File upload failed: ' . $uploadError->getMessage());
+                        // Continue saving without image
+                    }
                     
                     $this->entityManager->persist($news);
                     $this->entityManager->flush();
@@ -78,18 +83,38 @@ class AdminNewsController extends AbstractCrudController
             return $this->redirectToRoute('app_admin_news_index');
         }
 
-        return $this->handleEdit(
-            $request,
-            $this->entityManager,
-            $news,
-            NewsType::class,
-            'admin/news/edit.html.twig',
-            'News updated successfully!',
-            'app_admin_news_index',
-            function($form, $news) {
-                $this->fileUploadService->handleFormUpload($form, 'imageFile', $news, 'setPicture');
+        $form = $this->createForm(NewsType::class, $news);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if (!$form->isValid()) {
+                foreach ($form->getErrors(true) as $error) {
+                    $this->addFlash('error', 'Validation Error: ' . $error->getMessage());
+                }
+            } else {
+                try {
+                    // Handle file upload if present
+                    try {
+                        $this->fileUploadService->handleFormUpload($form, 'imageFile', $news, 'setPicture');
+                    } catch (\Exception $uploadError) {
+                        $this->addFlash('warning', 'File upload failed: ' . $uploadError->getMessage());
+                        // Continue saving without changing image
+                    }
+                    
+                    $this->entityManager->flush();
+
+                    $this->addFlash('success', 'News updated successfully!');
+                    return $this->redirectToRoute('app_admin_news_index');
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Error updating news: ' . $e->getMessage());
+                }
             }
-        );
+        }
+
+        return $this->render('admin/news/edit.html.twig', [
+            'news' => $news,
+            'form' => $form->createView(),
+        ]);
     }
 
     #[Route('/{id}/delete', name: 'app_admin_news_delete', requirements: ['id' => '\d+'], methods: ['POST'])]

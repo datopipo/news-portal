@@ -39,16 +39,27 @@ class NewsFixtures extends Fixture
             $filesystem->mkdir($uploadDir);
         }
 
-        // Download and save sample images
+        // Try to download sample images, but continue if it fails
         $savedImages = [];
         foreach ($this->imageUrls as $index => $url) {
-            $imageContent = file_get_contents($url);
-            if ($imageContent !== false) {
-                $filename = sprintf('news_%d.jpg', $index + 1);
-                $filepath = $uploadDir . '/' . $filename;
-                file_put_contents($filepath, $imageContent);
-                $savedImages[] = $filename;
+            try {
+                $imageContent = @file_get_contents($url);
+                if ($imageContent !== false) {
+                    $filename = sprintf('news_%d.jpg', $index + 1);
+                    $filepath = $uploadDir . '/' . $filename;
+                    file_put_contents($filepath, $imageContent);
+                    $savedImages[] = $filename;
+                }
+            } catch (\Exception $e) {
+                // Skip this image if download fails
+                continue;
             }
+        }
+
+        // Check for existing images if downloads failed
+        if (empty($savedImages)) {
+            $existingImages = glob($uploadDir . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
+            $savedImages = array_map('basename', $existingImages);
         }
 
         // Create news articles
