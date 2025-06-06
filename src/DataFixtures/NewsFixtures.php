@@ -22,44 +22,35 @@ class NewsFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // Create 50 news articles
-        for ($i = 0; $i < 50; $i++) {
-            $news = new News();
-            $news->setTitle($this->faker->sentence(rand(3, 6), true));
-            $news->setShortDescription($this->faker->paragraph(rand(1, 2)));
-            $news->setContent($this->faker->paragraphs(rand(3, 6), true));
-            $news->setInsertDate($this->faker->dateTimeBetween('-1 year', 'now'));
-            $news->setViewCount($this->faker->numberBetween(0, 1000));
-            $news->setPublished(true); // All published (matches spec)
-
-            // Add 1-3 random categories
-            $this->addRandomCategories($manager, $news);
-
-            $manager->persist($news);
-            $this->addReference('news_' . $i, $news);
-        }
-
-        $manager->flush();
-    }
-
-    private function addRandomCategories(ObjectManager $manager, News $news): void
-    {
         $categories = $manager->getRepository(Category::class)->findAll();
         
         if (empty($categories)) {
             return;
         }
-        
-        $numCategories = rand(1, min(3, count($categories)));
-        $selectedCategories = array_rand($categories, $numCategories);
-        
-        // Handle case where array_rand returns single value for count=1
-        if (!is_array($selectedCategories)) {
-            $selectedCategories = [$selectedCategories];
+
+        for ($i = 1; $i <= 50; $i++) {
+            $news = new News();
+            $news->setTitle($this->faker->sentence(6, true));
+            $news->setShortDescription($this->faker->paragraph(2, true));
+            $news->setContent($this->faker->paragraphs(5, true));
+            $news->setInsertDate($this->faker->dateTimeBetween('-6 months'));
+            $news->setViewCount($this->faker->numberBetween(0, 1000));
+
+            $categoryCount = $this->faker->numberBetween(1, 3);
+            $selectedCategories = (array) $this->faker->randomElements($categories, $categoryCount);
+            
+            foreach ($selectedCategories as $category) {
+            $news->addCategory($category);
+            }
+
+            if (count($selectedCategories) === 1 && is_array($selectedCategories[0])) {
+                $news->getCategories()->clear();
+                $news->addCategory($selectedCategories[0]);
+            }
+
+            $manager->persist($news);
         }
-        
-        foreach ($selectedCategories as $index) {
-            $news->addCategory($categories[$index]);
-        }
+
+        $manager->flush();
     }
 } 

@@ -1,0 +1,57 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Comments for News: {{ news.title }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Comments for: {{ news.title }}</h1>
+            
+            <div class="mb-3">
+                <a href="{{ path('app_admin_news_show', {'id': news.id}) }}" class="btn btn-secondary">Back to News</a>
+                <a href="{{ path('app_admin_comment_index') }}" class="btn btn-secondary">All Comments</a>
+            </div>
+            
+            {% if comments|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Author</th>
+                                <th>Email</th>
+                                <th>Content</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for comment in comments %}
+                                <tr>
+                                    <td>{{ comment.id }}</td>
+                                    <td>{{ comment.author }}</td>
+                                    <td>{{ comment.email }}</td>
+                                    <td>{{ comment.content|length > 50 ? comment.content|slice(0, 50) ~ '...' : comment.content }}</td>
+                                    <td>{{ comment.createdAt|date('Y-m-d H:i') }}</td>
+                                    <td>
+                                        <a href="{{ path('app_admin_comment_show', {'id': comment.id}) }}" class="btn btn-sm btn-info">View</a>
+                                        <form method="post" action="{{ path('app_admin_comment_delete', {'id': comment.id}) }}" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
+                                            <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No comments found for this news article.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

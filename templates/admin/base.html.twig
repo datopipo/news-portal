@@ -36,7 +36,7 @@
                     <ul class="space-y-2">
                         <li>
                             <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 {{ app.request.get('_route') starts with 'app_admin_dashboard' ? 'bg-gray-700 text-white' : '' }}" 
-                               href="{{ path('app_admin_dashboard') }}">
+                               href="{{ path('app_admin_index') }}">
                                 📊 Dashboard
                             </a>
                         </li>
@@ -65,16 +65,17 @@
                     <ul class="space-y-2">
                         <li>
                             <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200" 
-                               href="{{ path('app_home') }}" target="_blank">
+                               href="{{ path('app_public_index') }}" target="_blank">
                                 🌐 View Site
                             </a>
                         </li>
-                        <li>
-                            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200" 
-                               href="{{ path('app_logout') }}">
-                                🚪 Logout
-                            </a>
-                        </li>
+                                                    <li>
+                                <form method="post" action="{{ path('app_admin_logout') }}">
+                                    <button type="submit" class="flex items-center w-full px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors duration-200 text-left">
+                                        🚪 Logout
+                                    </button>
+                                </form>
+                            </li>
                     </ul>
                 </div>
             </nav>

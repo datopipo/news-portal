@@ -7,47 +7,29 @@ namespace App\Entity;
 use App\Repository\NewsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 
-#[ORM\Entity(repositoryClass: NewsRepository::class)]
-#[ORM\Table(name: 'news')]
 class News
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
-    
-    #[ORM\Column(type: 'string', length: 255)]
+
     private ?string $title = null;
-    
-    #[ORM\Column(type: 'text')]
+
     private ?string $shortDescription = null;
-    
-    #[ORM\Column(type: 'text')]
+
     private ?string $content = null;
-    
-    #[ORM\Column(type: 'datetime')]
+
     private ?\DateTimeInterface $insertDate = null;
-    
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+
     private ?string $picture = null;
-    
+
     private ?File $pictureFile = null;
-    
-    #[ORM\ManyToMany(targetEntity: Category::class)]
-    #[ORM\JoinTable(name: 'news_category')]
+
     private Collection $categories;
-    
-    #[ORM\OneToMany(mappedBy: 'news', targetEntity: Comment::class, cascade: ['persist', 'remove'])]
+
     private Collection $comments;
-    
-    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+
     private int $viewCount = 0;
-    
-    #[ORM\Column(type: 'boolean', options: ['default' => false])]
-    private bool $published = false;
 
     public function __construct()
     {
@@ -178,7 +160,6 @@ class News
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getNews() === $this) {
                 $comment->setNews(null);
             }
@@ -204,20 +185,10 @@ class News
         return $this;
     }
 
-    public function isPublished(): bool
-    {
-        return $this->published;
-    }
 
-    public function setPublished(bool $published): static
-    {
-        $this->published = $published;
-
-        return $this;
-    }
 
     public function __toString(): string
     {
         return $this->title ?? '';
     }
-} 
+}

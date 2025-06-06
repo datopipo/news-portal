@@ -1,278 +1,220 @@
-# News Portal - Symfony 7 Application
+# 📰 News Portal
 
-A modern news portal built with Symfony 7 and Doctrine 3, featuring both public and admin interfaces.
+A simple, clean news portal built with **Symfony 7** and **Doctrine 3**, following **KISS principles**.
 
-## 🚀 Features
+## ✨ Features
 
-### Public Interface
-- **Home Page**: Displays categories with their 3 most recent news articles
-- **Category Pages**: Paginated news listings (10 per page) for each category
-- **News Detail Pages**: Full article view with comments system
-- **Responsive Design**: Modern Bootstrap 5 UI with mobile support
+- **📖 Public Interface**: Browse news articles by categories, read articles, leave comments
+- **⚙️ Admin Interface**: Manage news articles, categories, and comments
+- **🔐 Authentication**: Simple admin login system
+- **📁 Categories**: Organize articles into categories
+- **💬 Comments**: Readers can comment on articles
+- **🖼️ Images**: Upload and display article images
+- **📱 Responsive**: Clean, modern UI that works on all devices
 
-### Admin Interface
-- **Dashboard**: Statistics overview with top news, latest articles, and recent comments
-- **Category Management**: Add, edit, and delete news categories
-- **News Management**: Create, edit, and delete news articles with image upload
-- **Comment Management**: View and delete user comments
-- **Secure Authentication**: Hardcoded admin user (admin/admin123)
+## 🛠️ Technology Stack
 
-### Technical Features
-- **File Upload**: Image upload for news articles (JPEG, PNG, GIF, max 5MB)
-- **View Tracking**: Automatic view count increment for news articles
-- **Weekly Statistics**: Email automation for top 10 news statistics
-- **Modern Architecture**: Symfony 7 with Doctrine 3, PSR-compliant code
+- **Backend**: Symfony 7, Doctrine 3, PHP 8+
+- **Frontend**: Twig templates, TailwindCSS
+- **Database**: SQLite (development), easily configurable for production
+- **Forms**: Symfony Forms with validation
+- **File Upload**: Local file storage for images
 
-## 📋 Requirements
+## 🚀 Quick Start
 
-- PHP 8.1 or higher
-- Composer
-- SQLite (default) or MySQL/PostgreSQL
-- Web server (Apache/Nginx) or PHP built-in server
+### 1. Install Dependencies
 
-## 🛠️ Installation
-
-1. **Clone or extract the project**
-   ```bash
-   cd news-portal
-   ```
-
-2. **Install dependencies**
-   ```bash
-   composer install
-   ```
-
-3. **Configure environment**
-   ```bash
-   # The .env file is already configured with SQLite
-   # Update MAILER_DSN and email settings if needed
-   ```
-
-4. **Create database and run migrations**
-   ```bash
-   php bin/console doctrine:database:create
-   php bin/console doctrine:migrations:migrate
-   ```
-
-5. **Create uploads directory**
-   ```bash
-   mkdir -p public/uploads/pictures
-   chmod 755 public/uploads/pictures
-   ```
-
-6. **Start the development server**
-   ```bash
-   php -S localhost:8000 -t public
-   ```
-
-## 🌱 Sample Data (Seeders)
-
-To populate your database with realistic sample data for testing and development:
-
-### Quick Setup
 ```bash
-# Load all sample data (categories, news, comments)
-php bin/console doctrine:fixtures:load --no-interaction
+composer install
 ```
 
-### What Gets Created
-- **10 Categories**: Technology, Sports, Business, Entertainment, Science, Politics, Health, Travel, Food, Fashion
-- **50 News Articles**: With realistic titles, descriptions, content, and publication dates
-- **200 Comments**: Distributed across the news articles for realistic engagement
+### 2. Set Up Database
 
-### Sample Data Details
-- All news articles are automatically set as **published** (matching original specification)
-- Articles use existing images from `public/uploads/pictures/` if available
-- Each article is assigned 1-3 random categories
-- View counts are randomly assigned (0-1000)
-- Publication dates span the last year for realistic timeline
-
-### Reset Database
 ```bash
-# If you want to start fresh
-php bin/console doctrine:database:drop --force
+# Create database and schema
 php bin/console doctrine:database:create
-php bin/console doctrine:migrations:migrate
-php bin/console doctrine:fixtures:load --no-interaction
+php bin/console doctrine:schema:create
 ```
 
-### Production Note
-**Important**: Only use fixtures in development! Never run `doctrine:fixtures:load` on production as it will **delete all existing data**.
-
-## 🎯 Usage
-
-### Public Access
-- **Home Page**: http://localhost:8000
-- **Category Pages**: Click on "View All" for any category
-- **News Articles**: Click on any news title to read full article
-- **Comments**: Add comments on news detail pages
-
-### Admin Access
-- **Login URL**: 
-http://localhost:8000/admin/login
-- **Credentials**: 
-  - Username: `admin`
-  - Password: `admin123`
-- **Dashboard**: Overview of all content and statistics
-- **Management**: Create and manage categories, news, and comments
-
-### Sample Data
-The application includes sample categories and news articles:
-- Technology category with a sample tech news article
-- Sports category with a sample sports news article
-
-## 📧 Weekly Statistics
-
-Configure and run weekly statistics email:
+### 3. Seed with Fake Data
 
 ```bash
-# Test the command
-php bin/console app:send-weekly-stats
+# Load sample data (10 categories, 50 articles, 200 comments)
+php bin/console app:seed-data
 
-# Set up cron job for weekly execution (every Sunday at 9 AM)
-0 9 * * 0 /path/to/php /path/to/project/bin/console app:send-weekly-stats
+# Or clear existing data and reload
+php bin/console app:seed-data --clear
 ```
 
-## 🗂️ Project Structure
+### 4. Start Development Server
 
-```
-news-portal/
-├── src/
-│   ├── Controller/          # Controllers for public and admin interfaces
-│   ├── Entity/             # Doctrine entities (News, Category, Comment)
-│   ├── Form/               # Symfony forms
-│   ├── Repository/         # Database repositories
-│   └── Command/            # Console commands
-├── templates/              # Twig templates
-│   ├── admin/             # Admin interface templates
-│   ├── home/              # Public home page
-│   ├── news/              # News detail pages
-│   └── category/          # Category pages
-├── public/
-│   └── uploads/pictures/   # Uploaded images
-├── config/                # Symfony configuration
-└── migrations/            # Database migrations
+```bash
+# Start the built-in PHP server
+php -S 127.0.0.1:8000 -t public/
+
+# Visit your site
+# Public site: http://127.0.0.1:8000
+# Admin panel: http://127.0.0.1:8000/admin
 ```
 
-## 🔧 Configuration
+## 🔑 Admin Access
+
+**Username**: `admin`  
+**Password**: `admin123`
+
+## 📊 Data Seeding
+
+The seeder creates realistic fake data for development:
+
+### Generated Data
+- **10 Categories**: Technology, Sports, Business, Entertainment, Science, Politics, Health, Travel, Food, Fashion
+- **50 News Articles**: Full articles with titles, descriptions, content, and random view counts
+- **200 Comments**: Realistic comments from various fake users
+- **Relationships**: Articles properly categorized, comments distributed across articles
+
+### Seeding Commands
+
+```bash
+# Basic seeding (adds to existing data)
+php bin/console app:seed-data
+
+# Clear all data and reseed (fresh start)
+php bin/console app:seed-data --clear
+
+# Manual fixture loading (if you prefer)
+php bin/console doctrine:fixtures:load
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── Controller/
+│   ├── Public/PublicController.php      # Public site (home, articles, comments)
+│   └── Admin/                           # Admin interface
+│       ├── AdminController.php          # Dashboard, login/logout
+│       ├── AdminNewsController.php      # Manage articles
+│       ├── AdminCategoryController.php  # Manage categories
+│       └── AdminCommentController.php   # Manage comments
+├── Entity/                              # Data models
+│   ├── News.php                        # Article entity
+│   ├── Category.php                    # Category entity
+│   └── Comment.php                     # Comment entity
+├── Form/                               # Symfony forms
+├── Repository/                         # Database queries
+├── DataFixtures/                       # Fake data generators
+└── Command/SeedDataCommand.php         # Data seeding command
+
+templates/
+├── base.html.twig                      # Base template
+├── home/                               # Public homepage
+├── news/                               # Article pages
+├── category/                           # Category pages
+└── admin/                              # Admin interface templates
+
+config/
+├── routes.yaml                         # Route definitions (YAML, no annotations)
+├── doctrine/                           # XML entity mapping (no annotations)
+└── packages/                           # Bundle configurations
+```
+
+## 🎯 Key Design Principles
+
+### KISS (Keep It Simple, Stupid)
+- **No Overengineering**: Simple controllers, no abstract base classes
+- **Direct Logic**: Clear, readable code over clever abstractions
+- **Simple Workflow**: Create article → immediately visible (no draft/publish complexity)
+
+### No Annotations Policy
+- **YAML Routing**: All routes defined in `config/routes.yaml`
+- **XML Doctrine Mapping**: Entity definitions in `config/doctrine/`
+- **Clean PHP Classes**: No attribute clutter
+
+## 🔧 Development Commands
 
 ### Database
-- Default: SQLite (`var/data_dev.db`)
-- Change `DATABASE_URL` in `.env` for MySQL/PostgreSQL
-
-### Email
-- Update `MAILER_DSN` in `.env` for email functionality
-- Configure `STATS_EMAIL` for weekly statistics recipient
-
-### File Uploads
-- Directory: `public/uploads/pictures/`
-- Max size: 5MB
-- Allowed types: JPEG, PNG, GIF
-
-## 🎨 Customization
-
-### Styling
-- Bootstrap 5 is used for responsive design
-- Custom CSS can be added to `templates/base.html.twig`
-- Admin interface has its own styling in `templates/admin/base.html.twig`
-
-### Adding Features
-- Create new controllers in `src/Controller/`
-- Add new entities in `src/Entity/`
-- Create migrations: `php bin/console doctrine:migrations:diff`
-
-## 🔒 Security
-
-- Admin authentication via Symfony Security
-- CSRF protection on forms
-- File upload validation
-- SQL injection protection via Doctrine ORM
-
-## 📱 Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Mobile responsive design
-- HTML5 and CSS3 features
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Database connection errors**
-   - Check `DATABASE_URL` in `.env`
-   - Ensure database file permissions for SQLite
-
-2. **File upload errors**
-   - Check `public/uploads/pictures/` directory permissions
-   - Verify PHP upload settings (`upload_max_filesize`, `post_max_size`)
-
-3. **Admin login issues**
-   - Use credentials: admin/admin123
-   - Clear cache: `php bin/console cache:clear`
-
-### Development Commands
-
 ```bash
-# Clear cache
-php bin/console cache:clear
+# Create database
+php bin/console doctrine:database:create
 
-# Update database schema
+# Update schema after entity changes
 php bin/console doctrine:schema:update --force
 
-# Create new migration
-php bin/console doctrine:migrations:diff
-
-# List all routes
-php bin/console debug:router
+# Validate schema
+php bin/console doctrine:schema:validate
 ```
 
-## 📄 License
+### Data Management
+```bash
+# Load fixtures
+php bin/console doctrine:fixtures:load
 
-This project is open source and available under the MIT License.
+# Seed with fake data
+php bin/console app:seed-data
 
-## 🤝 Contributing
+# Clear cache
+php bin/console cache:clear
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+### Debugging
+```bash
+# Check routes
+php bin/console debug:router
 
-## 📞 Support
+# Check services
+php bin/console debug:container
 
-For issues and questions:
-- Check the troubleshooting section
-- Review Symfony documentation
-- Create an issue in the project repository
+# Check forms
+php bin/console debug:form
+```
 
-## Image Setup
+## 📝 Usage Guide
 
-After pulling the project and running `composer install`, you need to set up the images for news articles:
+### 🌱 Using the Data Seeder
 
-1. Place the original images in `public/uploads/pictures/`:
-   - `majorana1-1260x708-v2-1024x575-684034d960c9e.jpg` (for AI breakthrough)
-   - `2025-Oscars-1030x580-68407d2a59259.jpg` (for World Cup)
-   - `5ZD3FGEX2JJU7FZSN2FDIIXFQ4-68407c60b12a6.jpg` (for Climate Summit)
-   - `images-68407cc6004a8.jpg` (for Tech Product)
-   - `stock-market-data-with-uptrend-vector-68407cab284d6.jpg` (for Economy)
+```bash
+# Seed with sample data (10 categories, 50 articles, 200 comments)
+php bin/console app:seed-data
 
-2. Run the image setup command:
-   ```bash
-   php bin/console app:setup-news-images
-   ```
+# Clear existing data and reseed
+php bin/console app:seed-data --clear
+```
 
-This will copy the original images to the correct filenames used by the fixtures.
+### For Administrators
 
-## Development
+1. **Login**: Visit `/admin` and login with admin/admin123
+2. **Dashboard**: View statistics and recent activity
+3. **Manage Articles**: Create, edit, delete news articles
+4. **Manage Categories**: Organize content with categories
+5. **Moderate Comments**: Review and manage user comments
 
-1. Clone the repository
-2. Run `composer install`
-3. Set up images (see above)
-4. Run migrations and load fixtures:
-   ```bash
-   php bin/console doctrine:migrations:migrate
-   php bin/console doctrine:fixtures:load
-   ```
-5. Start the development server:
-   ```bash
-   symfony server:start
-   ``` 
+### For Developers
+
+1. **Adding Features**: Follow the simple controller pattern
+2. **Database Changes**: Update entities, run schema update
+3. **New Routes**: Add to `config/routes.yaml`
+4. **Styling**: TailwindCSS classes in templates
+
+## 🛡️ Security Features
+
+- **Admin Authentication**: Login required for admin panel
+- **CSRF Protection**: All forms protected against CSRF attacks
+- **Input Validation**: Symfony form validation on all inputs
+- **File Upload Security**: Validated image uploads with size limits
+
+## 📚 Additional Information
+
+### File Uploads
+- **Location**: `public/uploads/pictures/`
+- **Allowed Types**: JPEG, PNG, GIF
+- **Size Limit**: 5MB maximum
+- **Processing**: Automatic filename generation to prevent conflicts
+
+### Database
+- **Development**: SQLite database in project root
+- **Production**: Easily configurable for MySQL/PostgreSQL
+- **Migrations**: Not used (keeping it simple with direct schema updates)
+
+---
+
+**Built with ❤️ using Symfony and KISS principles** 

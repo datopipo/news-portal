@@ -4,45 +4,59 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Constants\SecurityConstants;
 use App\Entity\Comment;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/comments')]
-class AdminCommentController extends AbstractCrudController
+class AdminCommentController extends AbstractController
 {
     public function __construct(
-        private readonly CommentRepository $commentRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly SecurityConstants $securityConstants
+        private readonly CommentRepository $commentRepository
     ) {
     }
 
-    #[Route('/', name: 'app_admin_comment_index')]
     public function index(): Response
     {
-        return $this->renderIndex('admin/comment/index.html.twig', $this->commentRepository->findAllOrderedByDate());
+        $comments = $this->commentRepository->findBy([], ['createdAt' => 'DESC']);
+        return $this->render('admin/comment/index.html.twig', ['comments' => $comments]);
     }
 
-    #[Route('/{id}/delete', name: 'app_admin_comment_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function delete(Request $request, Comment $comment): Response
+    public function show(int $id): Response
     {
-        return $this->handleDelete(
-            $request,
-            $this->entityManager,
-            $comment,
-            'delete',
-            'Comment deleted successfully!',
-            'app_admin_comment_index'
-        );
+        $comment = $this->commentRepository->find($id);
+        if (!$comment) {
+            throw $this->createNotFoundException('Comment not found');
+        }
+        return $this->render('admin/comment/show.html.twig', ['comment' => $comment]);
     }
 
-    protected function getResourceName(): string
+    public function delete(Request $request, int $id): Response
     {
-        return 'comments';
+        $comment = $this->commentRepository->find($id);
+
+        if (!$comment) {
+            throw $this->createNotFoundException('Comment not found');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $comment->getId(), $request->request->get('_token'))) {
+            $this->entityManager->remove($comment);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Comment deleted successfully.');
+        }
+
+        return $this->redirectToRoute('app_admin_comment_index');
+    }
+
+    public function newsByComments(int $id): Response
+    {
+        $comments = $this->commentRepository->findBy(['news' => $id], ['createdAt' => 'DESC']);
+        return $this->render('admin/comment/news_comments.html.twig', [
+            'comments' => $comments,
+            'newsId' => $id
+        ]);
     }
 }

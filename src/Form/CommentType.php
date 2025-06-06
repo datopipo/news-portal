@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Constants\SecurityConstants;
 use App\Entity\Comment;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -18,11 +17,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class CommentType extends AbstractType
 {
-    public function __construct(
-        private readonly SecurityConstants $securityConstants
-    ) {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -75,7 +69,7 @@ class CommentType extends AbstractType
             'data_class' => Comment::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_csrf_token',
-            'csrf_token_id' => $this->securityConstants->getCommentTokenId()
+            'csrf_token_id' => 'comment_item'
         ]);
     }
 }

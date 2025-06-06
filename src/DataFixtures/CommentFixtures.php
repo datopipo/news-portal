@@ -23,26 +23,23 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        $newsRepository = $manager->getRepository(News::class);
-        $allNews = $newsRepository->findAll();
+        $newsArticles = $manager->getRepository(News::class)->findAll();
         
-        if (empty($allNews)) {
-            return; // No news articles to comment on
+        if (empty($newsArticles)) {
+            return;
         }
 
-        // Create 200 comments
         for ($i = 0; $i < 200; $i++) {
             $comment = new Comment();
             $comment->setAuthorName($this->faker->name());
             $comment->setEmail($this->faker->email());
-            $comment->setContent($this->faker->paragraph(2));
-            $comment->setCreatedAt($this->faker->dateTimeBetween('-1 year', 'now'));
-
-            // Assign to a random news article
-            $randomNews = $allNews[array_rand($allNews)];
+            $comment->setContent($this->faker->paragraph(3, true));
+            $comment->setCreatedAt($this->faker->dateTimeBetween('-6 months'));
+            
+            $randomNews = $this->faker->randomElement($newsArticles);
             $comment->setNews($randomNews);
-
-            $manager->persist($comment);
+            
+                $manager->persist($comment);
         }
 
         $manager->flush();

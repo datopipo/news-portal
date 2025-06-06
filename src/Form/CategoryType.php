@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Constants\SecurityConstants;
 use App\Entity\Category;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,11 +14,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class CategoryType extends AbstractType
 {
-    public function __construct(
-        private readonly SecurityConstants $securityConstants
-    ) {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -34,7 +28,7 @@ class CategoryType extends AbstractType
                         'maxMessage' => 'Title should not exceed {{ limit }} characters',
                     ]),
                 ],
-            ]);
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -43,7 +37,7 @@ class CategoryType extends AbstractType
             'data_class' => Category::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_csrf_token',
-            'csrf_token_id' => $this->securityConstants->getCategoryTokenId()
+            'csrf_token_id' => 'category_item'
         ]);
     }
 }

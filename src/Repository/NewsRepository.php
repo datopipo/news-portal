@@ -7,12 +7,8 @@ namespace App\Repository;
 use App\Entity\News;
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<News>
- */
 class NewsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -20,10 +16,10 @@ class NewsRepository extends ServiceEntityRepository
         parent::__construct($registry, News::class);
     }
 
-    public function findRecentByCategory(Category $category, int $limit = 3): array
+    public function findLatestByCategory(Category $category, int $limit = 3): array
     {
-        return $this->createBaseQuery()
-            ->leftJoin('n.categories', 'c')
+        return $this->createQueryBuilder('n')
+            ->join('n.categories', 'c')
             ->where('c.id = :categoryId')
             ->setParameter('categoryId', $category->getId())
             ->orderBy('n.insertDate', 'DESC')
@@ -34,41 +30,26 @@ class NewsRepository extends ServiceEntityRepository
 
     public function findTopByViews(int $limit = 10): array
     {
-        return $this->createBaseQuery()
+        return $this->createQueryBuilder('n')
             ->orderBy('n.viewCount', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }
 
-    public function findLatest(int $limit = 10): array
-    {
-        return $this->createBaseQuery()
-            ->orderBy('n.insertDate', 'DESC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findAllPaginated(int $page = 1, int $limit = 10): Paginator
-    {
-        $query = $this->createBaseQuery()
-            ->orderBy('n.insertDate', 'DESC')
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery();
-
-        return new Paginator($query);
-    }
-
-
-
-    private function createBaseQuery()
+    public function createByCategoryQuery(Category $category)
     {
         return $this->createQueryBuilder('n')
-            ->addSelect('categories', 'comments')
-            ->leftJoin('n.categories', 'categories')
-            ->leftJoin('n.comments', 'comments');
+            ->join('n.categories', 'c')
+            ->where('c.id = :categoryId')
+            ->setParameter('categoryId', $category->getId())
+            ->orderBy('n.insertDate', 'DESC');
+    }
+
+    public function createAllNewsQuery()
+    {
+        return $this->createQueryBuilder('n')
+            ->orderBy('n.insertDate', 'DESC');
     }
 }
  

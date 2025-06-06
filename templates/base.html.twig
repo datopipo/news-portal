@@ -46,15 +46,17 @@
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex justify-between items-center h-16">
                     <div class="flex items-center">
-                        <a class="text-xl font-bold" href="{{ path('app_home') }}">📰 News Portal</a>
+                        <a class="text-xl font-bold" href="{{ path('app_public_index') }}">📰 News Portal</a>
                     </div>
                     
                     <div class="hidden md:flex items-center space-x-6">
-                        <a class="hover:text-blue-200 transition-colors duration-200" href="{{ path('app_home') }}">Home</a>
+                        <a class="hover:text-blue-200 transition-colors duration-200" href="{{ path('app_public_index') }}">Home</a>
                         
                         {% if is_granted('ROLE_ADMIN') %}
-                            <a class="hover:text-blue-200 transition-colors duration-200" href="{{ path('app_admin_dashboard') }}">Admin Panel</a>
-                            <a class="hover:text-blue-200 transition-colors duration-200" href="{{ path('app_logout') }}">Logout</a>
+                            <a class="hover:text-blue-200 transition-colors duration-200" href="{{ path('app_admin_index') }}">Admin Panel</a>
+                            <form method="post" action="{{ path('app_admin_logout') }}" style="display: inline;">
+                                <button type="submit" class="hover:text-blue-200 transition-colors duration-200 bg-transparent border-0 p-0 cursor-pointer">Logout</button>
+                            </form>
                         {% else %}
                             <a class="hover:text-blue-200 transition-colors duration-200" href="{{ path('app_admin_login') }}">Admin Login</a>
                         {% endif %}
@@ -72,11 +74,13 @@
                 
                 <!-- Mobile menu -->
                 <div id="mobileMenu" class="hidden md:hidden pb-4">
-                    <a class="block py-2 hover:text-blue-200 transition-colors duration-200" href="{{ path('app_home') }}">Home</a>
+                    <a class="block py-2 hover:text-blue-200 transition-colors duration-200" href="{{ path('app_public_index') }}">Home</a>
                     
                     {% if is_granted('ROLE_ADMIN') %}
-                        <a class="block py-2 hover:text-blue-200 transition-colors duration-200" href="{{ path('app_admin_dashboard') }}">Admin Panel</a>
-                        <a class="block py-2 hover:text-blue-200 transition-colors duration-200" href="{{ path('app_logout') }}">Logout</a>
+                        <a class="block py-2 hover:text-blue-200 transition-colors duration-200" href="{{ path('app_admin_index') }}">Admin Panel</a>
+                        <form method="post" action="{{ path('app_admin_logout') }}">
+                            <button type="submit" class="block py-2 hover:text-blue-200 transition-colors duration-200 bg-transparent border-0 p-0 text-left w-full cursor-pointer">Logout</button>
+                        </form>
                     {% else %}
                         <a class="block py-2 hover:text-blue-200 transition-colors duration-200" href="{{ path('app_admin_login') }}">Admin Login</a>
                     {% endif %}

@@ -130,7 +130,7 @@
                             <small class="text-gray-500">{{ comment.createdAt|date('M d, Y g:i A') }}</small>
                         </div>
                         <p class="text-gray-600 text-sm mb-2">{{ comment.content|slice(0, 100) }}...</p>
-                        <small class="text-gray-500">On: <a href="{{ path('app_news_show', {id: comment.news.id}) }}" class="text-blue-600 hover:text-blue-800">{{ comment.news.title }}</a></small>
+                                                    <small class="text-gray-500">On: <a href="{{ path('app_public_news', {id: comment.news.id}) }}" class="text-blue-600 hover:text-blue-800">{{ comment.news.title }}</a></small>
                     </div>
                 {% endfor %}
             </div>
@@ -152,7 +152,7 @@
             <a href="{{ path('app_admin_category_new') }}" class="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200">
                 📁 Add New Category
             </a>
-            <a href="{{ path('app_home') }}" class="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200" target="_blank">
+                                        <a href="{{ path('app_public_index') }}" class="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200" target="_blank">
                 🌐 View Public Site
             </a>
         </div>
