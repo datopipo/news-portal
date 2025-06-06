@@ -59,9 +59,9 @@ class SeedDataCommand extends Command
             $io->section('📈 Generated Data Summary:');
             $io->listing([
                 '10 Categories (Technology, Sports, Business, etc.)',
-                '50 News Articles with realistic content',
+                '50 News Articles with realistic content and images',
                 '200 Comments from various users',
-                'All articles have random view counts and dates',
+                'Random view counts, dates, and image assignments',
                 'Articles are properly categorized',
                 'Comments are distributed across articles'
             ]);

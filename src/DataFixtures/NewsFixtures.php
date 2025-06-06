@@ -28,11 +28,14 @@ class NewsFixtures extends Fixture
             return;
         }
 
-        // Available sample images
-        $sampleImages = [
-            'download-6842462a36368.jpg',
-            '5ZD3FGEX2JJU7FZSN2FDIIXFQ4-68424601abefd.jpg'
-        ];
+        // Ensure uploads directory exists
+        $uploadsDir = __DIR__ . '/../../public/uploads/pictures';
+        if (!is_dir($uploadsDir)) {
+            mkdir($uploadsDir, 0755, true);
+        }
+
+        // Generate sample images if they don't exist
+        $sampleImages = $this->generateSampleImages($uploadsDir);
 
         for ($i = 1; $i <= 50; $i++) {
             $news = new News();
@@ -42,8 +45,8 @@ class NewsFixtures extends Fixture
             $news->setInsertDate($this->faker->dateTimeBetween('-6 months'));
             $news->setViewCount($this->faker->numberBetween(0, 1000));
 
-            // Randomly assign an image to 60% of articles
-            if ($this->faker->boolean(60)) {
+            // Randomly assign an image to 70% of articles
+            if ($this->faker->boolean(70) && !empty($sampleImages)) {
                 $news->setPicture($this->faker->randomElement($sampleImages));
             }
 
@@ -63,5 +66,67 @@ class NewsFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    private function generateSampleImages(string $uploadsDir): array
+    {
+        $images = [];
+        
+        // Check for existing images first
+        $existingImages = glob($uploadsDir . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
+        if (!empty($existingImages)) {
+            return array_map('basename', $existingImages);
+        }
+
+        // Generate placeholder images using simple colored rectangles
+        $colors = [
+            ['r' => 59, 'g' => 130, 'b' => 246],   // Blue
+            ['r' => 16, 'g' => 185, 'b' => 129],   // Green
+            ['r' => 245, 'g' => 101, 'b' => 101],  // Red
+            ['r' => 168, 'g' => 85, 'b' => 247],   // Purple
+            ['r' => 251, 'g' => 146, 'b' => 60],   // Orange
+        ];
+
+        for ($i = 0; $i < 5; $i++) {
+            $filename = 'sample-' . ($i + 1) . '-' . uniqid() . '.jpg';
+            $filepath = $uploadsDir . '/' . $filename;
+            
+            if ($this->createPlaceholderImage($filepath, $colors[$i])) {
+                $images[] = $filename;
+            }
+        }
+
+        return $images;
+    }
+
+    private function createPlaceholderImage(string $filepath, array $color): bool
+    {
+        if (!extension_loaded('gd')) {
+            return false;
+        }
+
+        $width = 800;
+        $height = 600;
+        
+        $image = imagecreatetruecolor($width, $height);
+        $bgColor = imagecolorallocate($image, $color['r'], $color['g'], $color['b']);
+        $textColor = imagecolorallocate($image, 255, 255, 255);
+        
+        imagefill($image, 0, 0, $bgColor);
+        
+        // Add some text
+        $text = 'Sample News Image';
+        $fontSize = 5;
+        $textWidth = imagefontwidth($fontSize) * strlen($text);
+        $textHeight = imagefontheight($fontSize);
+        $x = ($width - $textWidth) / 2;
+        $y = ($height - $textHeight) / 2;
+        
+        imagestring($image, $fontSize, (int)$x, (int)$y, $text, $textColor);
+        
+        $result = imagejpeg($image, $filepath, 85);
+        imagedestroy($image);
+        
+        return $result;
     }
 } 
