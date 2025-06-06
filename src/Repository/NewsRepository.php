@@ -46,6 +46,42 @@ class NewsRepository extends ServiceEntityRepository
             ->orderBy('n.insertDate', 'DESC');
     }
 
+    /**
+     * Get paginated news by category with efficient database-level pagination
+     */
+    public function findByCategoryPaginated(Category $category, int $page = 1, int $limit = 10): array
+    {
+        $offset = ($page - 1) * $limit;
+        
+        $qb = $this->createQueryBuilder('n')
+            ->join('n.categories', 'c')
+            ->where('c.id = :categoryId')
+            ->setParameter('categoryId', $category->getId())
+            ->orderBy('n.insertDate', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        $news = $qb->getQuery()->getResult();
+
+        // Get total count for pagination
+        $countQb = $this->createQueryBuilder('n')
+            ->select('COUNT(DISTINCT n.id)')
+            ->join('n.categories', 'c')
+            ->where('c.id = :categoryId')
+            ->setParameter('categoryId', $category->getId());
+
+        $totalCount = (int) $countQb->getQuery()->getSingleScalarResult();
+
+        return [
+            'news' => $news,
+            'totalCount' => $totalCount,
+            'totalPages' => (int) ceil($totalCount / $limit),
+            'currentPage' => $page,
+            'hasNextPage' => $page < ceil($totalCount / $limit),
+            'hasPrevPage' => $page > 1,
+        ];
+    }
+
     public function createAllNewsQuery()
     {
         return $this->createQueryBuilder('n')

@@ -10,6 +10,7 @@ use App\Repository\NewsRepository;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AdminController extends AbstractController
@@ -21,12 +22,26 @@ class AdminController extends AbstractController
     ) {
     }
 
-    public function index(): Response
+    public function index(SessionInterface $session): Response
     {
-        // Get counts for dashboard stats
-        $totalNews = count($this->newsRepository->findAll());
-        $totalCategories = count($this->categoryRepository->findAll());
-        $totalComments = count($this->commentRepository->findAll());
+        // Example of working with session data
+        $user = $this->getUser();
+        if ($user) {
+            // Store user activity timestamp
+            $session->set('last_activity', new \DateTime());
+            $session->set('user_identifier', $user->getUserIdentifier());
+            
+            // Add flash message on first login
+            if (!$session->has('welcomed')) {
+                $this->addFlash('success', 'Welcome to the admin dashboard!');
+                $session->set('welcomed', true);
+            }
+        }
+
+        // Get counts for dashboard stats (efficient COUNT queries)
+        $totalNews = $this->newsRepository->count([]);
+        $totalCategories = $this->categoryRepository->count([]);
+        $totalComments = $this->commentRepository->count([]);
 
         // Get top news by views (limit 5)
         $topNews = $this->newsRepository->findTopByViews(5);
@@ -44,11 +59,22 @@ class AdminController extends AbstractController
             'topNews' => $topNews,
             'latestNews' => $latestNews,
             'latestComments' => $latestComments,
+            'last_activity' => $session->get('last_activity'),
         ]);
     }
 
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(AuthenticationUtils $authenticationUtils, SessionInterface $session): Response
     {
+        // If already logged in, redirect to admin dashboard
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_admin_index');
+        }
+
+        // Clear any existing session data on login page
+        if ($session->isStarted()) {
+            $session->clear();
+        }
+
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
@@ -60,6 +86,8 @@ class AdminController extends AbstractController
 
     public function logout(): void
     {
-        throw new LogicException('method can be blank - it will be intercepted by the logout key on your firewall.');
+        // This method can be blank - it will be intercepted by the logout key on your firewall.
+        // The session will be automatically invalidated and cookies cleared due to security.yaml config
+        throw new LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 }

@@ -2,8 +2,17 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
-    # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    # Enhanced session configuration for security
+    session:
+        enabled: true
+        handler_id: null # Use default session handler (files)
+        cookie_secure: auto # Use secure cookies in production
+        cookie_samesite: lax
+        cookie_httponly: true
+        cookie_lifetime: 3600 # 1 hour session lifetime
+        gc_maxlifetime: 3600 # Garbage collection after 1 hour
+        name: PHPSESSID
+        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
 
     #esi: true
     #fragments: true
