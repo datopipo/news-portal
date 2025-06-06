@@ -35,12 +35,29 @@ php -S 127.0.0.1:8000 -t public/
 php bin/console app:seed-data           # Add sample data
 php bin/console app:seed-data --clear   # Reset and reseed
 
+# Weekly email statistics
+php bin/console app:send-weekly-stats   # Send Top 10 news via email
+
 # Database
 php bin/console doctrine:schema:update --force
 
 # Debug
 php bin/console debug:router
 php bin/console cache:clear
+```
+
+## 📧 Email Setup
+
+Configure environment variables for weekly statistics emails:
+```bash
+MAILER_DSN=smtp://localhost
+STATS_EMAIL=admin@example.com
+FROM_EMAIL=noreply@newsportal.com
+```
+
+**Automated weekly sending** (add to crontab):
+```bash
+0 9 * * 0 php /path/to/project/bin/console app:send-weekly-stats
 ```
 
 ## 📁 Structure
