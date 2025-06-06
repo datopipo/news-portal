@@ -24,18 +24,8 @@ class PublicController extends AbstractController
 
     public function index(): Response
     {
-        $categories = $this->categoryRepository->findAll();
-        $categoriesWithNews = [];
-
-        foreach ($categories as $category) {
-            $news = $this->newsRepository->findLatestByCategory($category);
-            if (!empty($news)) {
-                $categoriesWithNews[] = [
-                    'category' => $category,
-                    'news' => $news,
-                ];
-            }
-        }
+        // Fix N+1 query problem with single optimized query
+        $categoriesWithNews = $this->categoryRepository->findCategoriesWithLatestNews(3);
 
         return $this->render('home/index.html.twig', [
             'categoriesWithNews' => $categoriesWithNews,
@@ -50,24 +40,20 @@ class PublicController extends AbstractController
             throw $this->createNotFoundException('Category not found');
         }
 
-        $newsQuery = $this->newsRepository->createByCategoryQuery($category);
-        $allNews = $newsQuery->getQuery()->getResult();
-
         $page = max(1, $request->query->getInt('page', 1));
         $itemsPerPage = $this->getParameter('pagination.items_per_page');
-        $totalItems = count($allNews);
-        $totalPages = (int) ceil($totalItems / $itemsPerPage);
-        $offset = ($page - 1) * $itemsPerPage;
-        $news = array_slice($allNews, $offset, $itemsPerPage);
+        
+        // Use efficient database-level pagination
+        $paginationData = $this->newsRepository->findByCategoryPaginated($category, $page, $itemsPerPage);
 
         return $this->render('category/show.html.twig', [
             'category' => $category,
-            'news' => $news,
-            'currentPage' => $page,
-            'totalPages' => $totalPages,
-            'totalItems' => $totalItems,
-            'hasNextPage' => $page < $totalPages,
-            'hasPrevPage' => $page > 1,
+            'news' => $paginationData['news'],
+            'currentPage' => $paginationData['currentPage'],
+            'totalPages' => $paginationData['totalPages'],
+            'totalItems' => $paginationData['totalCount'],
+            'hasNextPage' => $paginationData['hasNextPage'],
+            'hasPrevPage' => $paginationData['hasPrevPage'],
         ]);
     }
 
@@ -110,8 +96,17 @@ class PublicController extends AbstractController
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Comment added successfully.');
+            return $this->redirectToRoute('app_public_news', ['id' => $news->getId()]);
         }
 
-        return $this->redirectToRoute('app_public_news', ['id' => $news->getId()]);
+        // If form has errors, show them by rendering the news page with form errors
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Please correct the errors in your comment.');
+        }
+
+        return $this->render('news/show.html.twig', [
+            'news' => $news,
+            'form' => $form->createView(),
+        ]);
     }
 }

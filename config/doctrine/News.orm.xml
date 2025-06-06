@@ -5,6 +5,11 @@
                                       https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="App\Entity\News" table="news">
+        <indexes>
+            <index name="idx_news_insert_date" columns="insert_date"/>
+            <index name="idx_news_view_count" columns="view_count"/>
+        </indexes>
+        
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>

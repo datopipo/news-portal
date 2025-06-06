@@ -23,10 +23,10 @@ class AdminController extends AbstractController
 
     public function index(): Response
     {
-        // Get counts for dashboard stats
-        $totalNews = count($this->newsRepository->findAll());
-        $totalCategories = count($this->categoryRepository->findAll());
-        $totalComments = count($this->commentRepository->findAll());
+        // Get counts for dashboard stats (efficient COUNT queries)
+        $totalNews = $this->newsRepository->count([]);
+        $totalCategories = $this->categoryRepository->count([]);
+        $totalComments = $this->commentRepository->count([]);
 
         // Get top news by views (limit 5)
         $topNews = $this->newsRepository->findTopByViews(5);
