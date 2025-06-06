@@ -37,7 +37,7 @@ class NewsFixtures extends Fixture
         // Generate sample images if they don't exist
         $sampleImages = $this->generateSampleImages($uploadsDir);
 
-        for ($i = 1; $i <= 50; $i++) {
+        for ($i = 1; $i <= 25; $i++) {
             $news = new News();
             $news->setTitle($this->faker->sentence(6, true));
             $news->setShortDescription($this->faker->paragraph(2, true));
@@ -46,7 +46,7 @@ class NewsFixtures extends Fixture
             $news->setViewCount($this->faker->numberBetween(0, 1000));
 
             // Randomly assign an image to 70% of articles
-            if ($this->faker->boolean(70) && !empty($sampleImages)) {
+            if (!empty($sampleImages)) {
                 $news->setPicture($this->faker->randomElement($sampleImages));
             }
 
