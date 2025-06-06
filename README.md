@@ -62,28 +62,7 @@ php -S 127.0.0.1:8000 -t public/
 **Username**: `admin`  
 **Password**: `admin123`
 
-## 📊 Data Seeding
 
-The seeder creates realistic fake data for development:
-
-### Generated Data
-- **10 Categories**: Technology, Sports, Business, Entertainment, Science, Politics, Health, Travel, Food, Fashion
-- **50 News Articles**: Full articles with titles, descriptions, content, and random view counts
-- **200 Comments**: Realistic comments from various fake users
-- **Relationships**: Articles properly categorized, comments distributed across articles
-
-### Seeding Commands
-
-```bash
-# Basic seeding (adds to existing data)
-php bin/console app:seed-data
-
-# Clear all data and reseed (fresh start)
-php bin/console app:seed-data --clear
-
-# Manual fixture loading (if you prefer)
-php bin/console doctrine:fixtures:load
-```
 
 ## 📁 Project Structure
 
@@ -146,12 +125,6 @@ php bin/console doctrine:schema:validate
 
 ### Data Management
 ```bash
-# Load fixtures
-php bin/console doctrine:fixtures:load
-
-# Seed with fake data
-php bin/console app:seed-data
-
 # Clear cache
 php bin/console cache:clear
 ```
@@ -179,6 +152,8 @@ php bin/console app:seed-data
 # Clear existing data and reseed
 php bin/console app:seed-data --clear
 ```
+
+**Generated data**: Technology/Sports/Business categories, realistic articles with content, user comments, proper relationships
 
 ### For Administrators
 
