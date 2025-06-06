@@ -76,7 +76,7 @@ class AdminNewsController extends AbstractCrudController
     #[Route('/{id}/edit', name: 'app_admin_news_edit', requirements: ['id' => '\d+'])]
     public function edit(Request $request, int $id): Response
     {
-        $news = $this->newsRepository->find($id);
+        $news = $this->newsRepository->findById($id);
         
         if (!$news) {
             $this->addFlash('error', 'News item not found.');
@@ -118,8 +118,15 @@ class AdminNewsController extends AbstractCrudController
     }
 
     #[Route('/{id}/delete', name: 'app_admin_news_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function delete(Request $request, News $news): Response
+    public function delete(Request $request, int $id): Response
     {
+        $news = $this->newsRepository->findById($id);
+        
+        if (!$news) {
+            $this->addFlash('error', 'News article not found.');
+            return $this->redirectToRoute('app_admin_news_index');
+        }
+
         return $this->handleDelete(
             $request,
             $this->entityManager,

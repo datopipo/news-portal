@@ -40,9 +40,15 @@ class NewsController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_news_show', methods: ['GET', 'POST'])]
-    public function show(Request $request, News $news): Response
+    #[Route('/{id}', name: 'app_news_show', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
+    public function show(Request $request, int $id): Response
     {
+        $news = $this->newsRepository->findById($id);
+        
+        if (!$news) {
+            throw $this->createNotFoundException('News article not found.');
+        }
+
         $this->newsViewService->incrementViewCount($news);
 
         $form = $this->createForm(CommentType::class);
