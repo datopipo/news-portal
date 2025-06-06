@@ -2,17 +2,6 @@
 
 Simple news portal built with **Symfony 7** and **Doctrine 3**.
 
-## ✨ Features
-
-- **Public Site**: Browse articles by category, view comments, post comments
-- **Admin Panel**: Full CRUD for articles, categories, and comment management  
-- **Authentication**: Secure admin login with CSRF protection
-- **File Uploads**: Image upload for news articles
-- **Responsive UI**: Mobile-friendly design with Tailwind CSS
-- **Data Seeding**: Generate sample data with realistic content
-- **Email Stats**: Weekly top 10 news statistics via email
-- **Zero Setup**: Pre-configured environment variables included
-
 ## 🚀 Quick Start
 
 ```bash
