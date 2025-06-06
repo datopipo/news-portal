@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\Category;
+use App\Entity\News;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -28,7 +30,20 @@ class CategoryType extends AbstractType
                         'maxMessage' => 'Title should not exceed {{ limit }} characters',
                     ]),
                 ],
-        ]);
+            ])
+            ->add('news', EntityType::class, [
+                'class' => News::class,
+                'choice_label' => 'title',
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'label' => 'Related News',
+                'help' => 'Select news items that belong to this category',
+                'attr' => [
+                    'class' => 'form-control',
+                    'size' => 8,
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
