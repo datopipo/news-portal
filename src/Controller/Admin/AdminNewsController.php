@@ -110,10 +110,35 @@ class AdminNewsController extends AbstractController
     {
         $pictureFile = $form->get('pictureFile')->getData();
         if ($pictureFile) {
-            $originalFilename = pathinfo($pictureFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $newFilename = $originalFilename . '-' . uniqid() . '.' . $pictureFile->guessExtension();
-            $pictureFile->move($this->getParameter('pictures_directory'), $newFilename);
-            $news->setPicture($newFilename);
+            // Security: Validate file type and extension
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            
+            $extension = strtolower($pictureFile->guessExtension());
+            $mimeType = $pictureFile->getMimeType();
+            
+            if (!in_array($extension, $allowedExtensions) || !in_array($mimeType, $allowedMimeTypes)) {
+                throw new \InvalidArgumentException('Invalid file type. Only JPG, PNG and GIF images are allowed.');
+            }
+            
+            // Security: Sanitize filename completely
+            $safeFilename = 'news-image-' . uniqid() . '.' . $extension;
+            
+            try {
+                $pictureFile->move($this->getParameter('pictures_directory'), $safeFilename);
+                
+                // Clean up old image if exists
+                if ($news->getPicture()) {
+                    $oldImagePath = $this->getParameter('pictures_directory') . '/' . $news->getPicture();
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+                
+                $news->setPicture($safeFilename);
+            } catch (\Exception $e) {
+                throw new \RuntimeException('Failed to upload image: ' . $e->getMessage());
+            }
         }
     }
 }

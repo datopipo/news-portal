@@ -5,8 +5,8 @@ security:
         users_in_memory: 
             memory:
                 users:
-                    admin:
-                        password: '$2y$13$37GI0qNql.ExUe68DQdFQuAaUhqOeNknXDIpaY5NjudAiQf/t2K4y' # admin123
+                    '%env(ADMIN_USERNAME)%':
+                        password: '%env(ADMIN_PASSWORD_HASH)%'
                         roles: 'ROLE_ADMIN'
     firewalls:
         dev:

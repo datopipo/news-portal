@@ -1,9 +1,0 @@
-home:
-    path: /
-    controller: App\Controller\Public\PublicController::index
-    methods: [GET]
-
-admin:
-    path: /admin
-    controller: App\Controller\Admin\AdminController::index
-    methods: [GET] 
