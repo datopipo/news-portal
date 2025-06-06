@@ -70,4 +70,4 @@ templates/               # Twig templates
 config/routes.yaml       # Routes (no annotations)
 ```
 
-**Built with Symfony 7 following KISS principles** 
+**Built with Symfony 7 ** 
