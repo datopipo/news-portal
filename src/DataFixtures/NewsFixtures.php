@@ -7,22 +7,13 @@ namespace App\DataFixtures;
 use App\Entity\News;
 use App\Entity\Category;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
-use Symfony\Component\Filesystem\Filesystem;
 
 class NewsFixtures extends Fixture
 {
     private Generator $faker;
-    private array $imageUrls = [
-        'https://picsum.photos/800/400',
-        'https://picsum.photos/800/401',
-        'https://picsum.photos/800/402',
-        'https://picsum.photos/800/403',
-        'https://picsum.photos/800/404',
-    ];
 
     public function __construct()
     {
@@ -31,58 +22,18 @@ class NewsFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $filesystem = new Filesystem();
-        $uploadDir = 'public/uploads/pictures';
-
-        // Create upload directory if it doesn't exist
-        if (!$filesystem->exists($uploadDir)) {
-            $filesystem->mkdir($uploadDir);
-        }
-
-        // Try to download sample images, but continue if it fails
-        $savedImages = [];
-        foreach ($this->imageUrls as $index => $url) {
-            try {
-                $imageContent = @file_get_contents($url);
-                if ($imageContent !== false) {
-                    $filename = sprintf('news_%d.jpg', $index + 1);
-                    $filepath = $uploadDir . '/' . $filename;
-                    file_put_contents($filepath, $imageContent);
-                    $savedImages[] = $filename;
-                }
-            } catch (\Exception $e) {
-                // Skip this image if download fails
-                continue;
-            }
-        }
-
-        // Check for existing images if downloads failed
-        if (empty($savedImages)) {
-            $existingImages = glob($uploadDir . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
-            $savedImages = array_map('basename', $existingImages);
-        }
-
-        // Create news articles
+        // Create 50 news articles
         for ($i = 0; $i < 50; $i++) {
             $news = new News();
-            $news->setTitle($this->faker->sentence(3, true));
-            $news->setShortDescription($this->faker->paragraph(2));
-            $news->setContent($this->faker->paragraphs(3, true));
+            $news->setTitle($this->faker->sentence(rand(3, 6), true));
+            $news->setShortDescription($this->faker->paragraph(rand(1, 2)));
+            $news->setContent($this->faker->paragraphs(rand(3, 6), true));
             $news->setInsertDate($this->faker->dateTimeBetween('-1 year', 'now'));
             $news->setViewCount($this->faker->numberBetween(0, 1000));
-            $news->setPublished($this->faker->boolean(80)); // 80% chance of being published
-
-            // Set a random image from our saved images
-            if (!empty($savedImages)) {
-                $randomImage = $savedImages[array_rand($savedImages)];
-                $news->setPicture($randomImage);
-            }
+            $news->setPublished(true); // All published (matches spec)
 
             // Add 1-3 random categories
-            $categories = $this->getRandomCategories($manager);
-            foreach ($categories as $category) {
-                $news->addCategory($category);
-            }
+            $this->addRandomCategories($manager, $news);
 
             $manager->persist($news);
             $this->addReference('news_' . $i, $news);
@@ -91,25 +42,24 @@ class NewsFixtures extends Fixture
         $manager->flush();
     }
 
-    private function getRandomCategories(ObjectManager $manager): array
+    private function addRandomCategories(ObjectManager $manager, News $news): void
     {
-        $categoryRepository = $manager->getRepository(Category::class);
-        $allCategories = $categoryRepository->findAll();
+        $categories = $manager->getRepository(Category::class)->findAll();
         
-        if (empty($allCategories)) {
-            return [];
+        if (empty($categories)) {
+            return;
         }
         
-        $categories = [];
-        $numCategories = rand(1, min(3, count($allCategories)));
+        $numCategories = rand(1, min(3, count($categories)));
+        $selectedCategories = array_rand($categories, $numCategories);
         
-        for ($i = 0; $i < $numCategories; $i++) {
-            $randomCategory = $allCategories[array_rand($allCategories)];
-            if (!in_array($randomCategory, $categories, true)) {
-                $categories[] = $randomCategory;
-            }
+        // Handle case where array_rand returns single value for count=1
+        if (!is_array($selectedCategories)) {
+            $selectedCategories = [$selectedCategories];
         }
-
-        return $categories;
+        
+        foreach ($selectedCategories as $index) {
+            $news->addCategory($categories[$index]);
+        }
     }
 } 

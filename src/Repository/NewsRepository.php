@@ -61,14 +61,7 @@ class NewsRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
-    public function findById(int $id): ?News
-    {
-        return $this->createBaseQuery()
-            ->where('n.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
+
 
     private function createBaseQuery()
     {

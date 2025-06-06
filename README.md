@@ -65,6 +65,40 @@ A modern news portal built with Symfony 7 and Doctrine 3, featuring both public 
    php -S localhost:8000 -t public
    ```
 
+## 🌱 Sample Data (Seeders)
+
+To populate your database with realistic sample data for testing and development:
+
+### Quick Setup
+```bash
+# Load all sample data (categories, news, comments)
+php bin/console doctrine:fixtures:load --no-interaction
+```
+
+### What Gets Created
+- **10 Categories**: Technology, Sports, Business, Entertainment, Science, Politics, Health, Travel, Food, Fashion
+- **50 News Articles**: With realistic titles, descriptions, content, and publication dates
+- **200 Comments**: Distributed across the news articles for realistic engagement
+
+### Sample Data Details
+- All news articles are automatically set as **published** (matching original specification)
+- Articles use existing images from `public/uploads/pictures/` if available
+- Each article is assigned 1-3 random categories
+- View counts are randomly assigned (0-1000)
+- Publication dates span the last year for realistic timeline
+
+### Reset Database
+```bash
+# If you want to start fresh
+php bin/console doctrine:database:drop --force
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate
+php bin/console doctrine:fixtures:load --no-interaction
+```
+
+### Production Note
+**Important**: Only use fixtures in development! Never run `doctrine:fixtures:load` on production as it will **delete all existing data**.
+
 ## 🎯 Usage
 
 ### Public Access
@@ -74,7 +108,8 @@ A modern news portal built with Symfony 7 and Doctrine 3, featuring both public 
 - **Comments**: Add comments on news detail pages
 
 ### Admin Access
-- **Login URL**: http://localhost:8000/admin/login
+- **Login URL**: 
+http://localhost:8000/admin/login
 - **Credentials**: 
   - Username: `admin`
   - Password: `admin123`
