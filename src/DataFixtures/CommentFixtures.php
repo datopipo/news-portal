@@ -6,20 +6,11 @@ namespace App\DataFixtures;
 
 use App\Entity\Comment;
 use App\Entity\News;
-use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
-use Faker\Generator;
 
-class CommentFixtures extends Fixture implements DependentFixtureInterface
+class CommentFixtures extends BaseFixture implements DependentFixtureInterface
 {
-    private Generator $faker;
-
-    public function __construct()
-    {
-        $this->faker = Factory::create();
-    }
 
     public function load(ObjectManager $manager): void
     {

@@ -23,7 +23,7 @@ class NewsFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $categories = $manager->getRepository(Category::class)->findAll();
-        
+
         if (empty($categories)) {
             return;
         }
@@ -39,8 +39,8 @@ class NewsFixtures extends Fixture
 
         for ($i = 1; $i <= 25; $i++) {
             $news = new News();
-            $news->setTitle($this->faker->sentence(6, true));
-            $news->setShortDescription($this->faker->paragraph(2, true));
+            $news->setTitle($this->faker->sentence());
+            $news->setShortDescription($this->faker->paragraph(2));
             $news->setContent($this->faker->paragraphs(5, true));
             $news->setInsertDate($this->faker->dateTimeBetween('-6 months'));
             $news->setViewCount($this->faker->numberBetween(0, 1000));
@@ -51,8 +51,8 @@ class NewsFixtures extends Fixture
             }
 
             $categoryCount = $this->faker->numberBetween(1, 3);
-            $selectedCategories = (array) $this->faker->randomElements($categories, $categoryCount);
-            
+            $selectedCategories = $this->faker->randomElements($categories, $categoryCount);
+
             foreach ($selectedCategories as $category) {
                 $news->addCategory($category);
             }
@@ -71,7 +71,7 @@ class NewsFixtures extends Fixture
     private function generateSampleImages(string $uploadsDir): array
     {
         $images = [];
-        
+
         // Check for existing images first
         $existingImages = glob($uploadsDir . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
         if (!empty($existingImages)) {
@@ -90,7 +90,7 @@ class NewsFixtures extends Fixture
         for ($i = 0; $i < 5; $i++) {
             $filename = 'sample-' . ($i + 1) . '-' . uniqid() . '.jpg';
             $filepath = $uploadsDir . '/' . $filename;
-            
+
             if ($this->createPlaceholderImage($filepath, $colors[$i])) {
                 $images[] = $filename;
             }
@@ -107,13 +107,13 @@ class NewsFixtures extends Fixture
 
         $width = 800;
         $height = 600;
-        
+
         $image = imagecreatetruecolor($width, $height);
         $bgColor = imagecolorallocate($image, $color['r'], $color['g'], $color['b']);
         $textColor = imagecolorallocate($image, 255, 255, 255);
-        
+
         imagefill($image, 0, 0, $bgColor);
-        
+
         // Add some text
         $text = 'Sample News Image';
         $fontSize = 5;
@@ -121,12 +121,12 @@ class NewsFixtures extends Fixture
         $textHeight = imagefontheight($fontSize);
         $x = ($width - $textWidth) / 2;
         $y = ($height - $textHeight) / 2;
-        
+
         imagestring($image, $fontSize, (int)$x, (int)$y, $text, $textColor);
-        
+
         $result = imagejpeg($image, $filepath, 85);
         imagedestroy($image);
-        
+
         return $result;
     }
-} 
+}
