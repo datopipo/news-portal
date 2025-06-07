@@ -8,7 +8,11 @@ use App\Entity\News;
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\QueryBuilder;
 
+/**
+ * @extends ServiceEntityRepository<News>
+ */
 class NewsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,6 +20,9 @@ class NewsRepository extends ServiceEntityRepository
         parent::__construct($registry, News::class);
     }
 
+    /**
+     * @return News[]
+     */
     public function findLatestByCategory(Category $category, int $limit = 3): array
     {
         return $this->createQueryBuilder('n')
@@ -28,6 +35,9 @@ class NewsRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return News[]
+     */
     public function findTopByViews(int $limit = 10): array
     {
         return $this->createQueryBuilder('n')
@@ -37,7 +47,7 @@ class NewsRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function createByCategoryQuery(Category $category)
+    public function createByCategoryQuery(Category $category): QueryBuilder
     {
         return $this->createQueryBuilder('n')
             ->join('n.categories', 'c')
@@ -48,6 +58,7 @@ class NewsRepository extends ServiceEntityRepository
 
     /**
      * Get paginated news by category with efficient database-level pagination
+     * @return array{news: News[], totalCount: int, totalPages: int, currentPage: int, hasNextPage: bool, hasPrevPage: bool}
      */
     public function findByCategoryPaginated(Category $category, int $page = 1, int $limit = 10): array
     {
@@ -82,7 +93,7 @@ class NewsRepository extends ServiceEntityRepository
         ];
     }
 
-    public function createAllNewsQuery()
+    public function createAllNewsQuery(): QueryBuilder
     {
         return $this->createQueryBuilder('n')
             ->orderBy('n.insertDate', 'DESC');

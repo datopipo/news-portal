@@ -54,12 +54,9 @@ class NewsFixtures extends Fixture
             $selectedCategories = $this->faker->randomElements($categories, $categoryCount);
 
             foreach ($selectedCategories as $category) {
-                $news->addCategory($category);
-            }
-
-            if (count($selectedCategories) === 1 && is_array($selectedCategories[0])) {
-                $news->getCategories()->clear();
-                $news->addCategory($selectedCategories[0]);
+                if ($category instanceof Category) {
+                    $news->addCategory($category);
+                }
             }
 
             $manager->persist($news);
@@ -68,6 +65,9 @@ class NewsFixtures extends Fixture
         $manager->flush();
     }
 
+    /**
+     * @return string[]
+     */
     private function generateSampleImages(string $uploadsDir): array
     {
         $images = [];
@@ -99,6 +99,9 @@ class NewsFixtures extends Fixture
         return $images;
     }
 
+    /**
+     * @param array{r: int, g: int, b: int} $color
+     */
     private function createPlaceholderImage(string $filepath, array $color): bool
     {
         if (!extension_loaded('gd')) {

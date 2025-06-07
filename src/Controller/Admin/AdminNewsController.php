@@ -12,6 +12,7 @@ use Exception;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -109,7 +110,7 @@ class AdminNewsController extends AbstractController
         return $this->redirectToRoute('app_admin_news_index');
     }
 
-    private function handleFileUpload($form, News $news): void
+    private function handleFileUpload(FormInterface $form, News $news): void
     {
         $pictureFile = $form->get('pictureFile')->getData();
         if ($pictureFile) {

@@ -10,6 +10,9 @@ class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
 
+    /**
+     * @phpstan-ignore-next-line method.unused
+     */
     private function configureRoutes(RoutingConfigurator $routes): void
     {
         // Public routes

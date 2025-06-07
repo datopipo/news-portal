@@ -38,6 +38,7 @@ class SessionManager
 
     /**
      * Get session data for logged in user
+     * @return array<string, mixed>
      */
     public function getSessionData(): array
     {
@@ -95,6 +96,7 @@ class SessionManager
 
     /**
      * Get session statistics
+     * @return array<string, mixed>
      */
     public function getSessionStats(): array
     {

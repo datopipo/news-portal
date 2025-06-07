@@ -10,6 +10,9 @@ use Doctrine\Persistence\ObjectManager;
 
 class CategoryFixtures extends Fixture
 {
+    /**
+     * @var string[]
+     */
     private array $categories = [
         'Technology',
         'Sports', 

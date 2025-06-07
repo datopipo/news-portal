@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\News;
 use App\Repository\NewsRepository;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
@@ -39,6 +40,9 @@ class WeeklyStatsEmailService
         return true;
     }
 
+    /**
+     * @param News[] $topNews
+     */
     private function generateHtmlContent(array $topNews): string
     {
         $html = '<h2>Weekly News Statistics</h2>';

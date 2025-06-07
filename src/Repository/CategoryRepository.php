@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\Entity\News;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Category>
+ */
 class CategoryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -15,6 +19,9 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
+    /**
+     * @return Category[]
+     */
     public function findAllWithRecentNews(): array
     {
         return $this->createQueryBuilder('c')
@@ -27,6 +34,7 @@ class CategoryRepository extends ServiceEntityRepository
 
     /**
      * Get categories with their latest news (fixes N+1 query problem)
+     * @return array<int, array{category: Category, news: array<int, News>}>
      */
     public function findCategoriesWithLatestNews(int $newsLimit = 3): array
     {

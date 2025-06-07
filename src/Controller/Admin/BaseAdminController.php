@@ -19,6 +19,9 @@ abstract class BaseAdminController extends AbstractController
 
     /**
      * Find entity by ID or throw 404 exception
+     * @template T of object
+     * @param class-string<T> $repository
+     * @return T
      */
     protected function findEntityOr404(string $repository, int $id, string $entityName = 'Entity'): object
     {
