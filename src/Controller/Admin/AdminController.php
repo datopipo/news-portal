@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Repository\CategoryRepository;
 use App\Repository\CommentRepository;
 use App\Repository\NewsRepository;
+use DateTime;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,9 +29,9 @@ class AdminController extends AbstractController
         $user = $this->getUser();
         if ($user) {
             // Store user activity timestamp
-            $session->set('last_activity', new \DateTime());
+            $session->set('last_activity', new DateTime());
             $session->set('user_identifier', $user->getUserIdentifier());
-            
+
             // Add flash message on first login
             if (!$session->has('welcomed')) {
                 $this->addFlash('success', 'Welcome to the admin dashboard!');
@@ -39,9 +40,9 @@ class AdminController extends AbstractController
         }
 
         // Get counts for dashboard stats (efficient COUNT queries)
-        $totalNews = $this->newsRepository->count([]);
-        $totalCategories = $this->categoryRepository->count([]);
-        $totalComments = $this->commentRepository->count([]);
+        $totalNews = $this->newsRepository->count();
+        $totalCategories = $this->categoryRepository->count();
+        $totalComments = $this->commentRepository->count();
 
         // Get top news by views (limit 5)
         $topNews = $this->newsRepository->findTopByViews(5);

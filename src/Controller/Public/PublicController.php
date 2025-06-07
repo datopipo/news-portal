@@ -25,7 +25,7 @@ class PublicController extends AbstractController
     public function index(): Response
     {
         // Fix N+1 query problem with single optimized query
-        $categoriesWithNews = $this->categoryRepository->findCategoriesWithLatestNews(3);
+        $categoriesWithNews = $this->categoryRepository->findCategoriesWithLatestNews();
 
         return $this->render('home/index.html.twig', [
             'categoriesWithNews' => $categoriesWithNews,
@@ -42,7 +42,7 @@ class PublicController extends AbstractController
 
         $page = max(1, $request->query->getInt('page', 1));
         $itemsPerPage = $this->getParameter('pagination.items_per_page');
-        
+
         // Use efficient database-level pagination
         $paginationData = $this->newsRepository->findByCategoryPaginated($category, $page, $itemsPerPage);
 
