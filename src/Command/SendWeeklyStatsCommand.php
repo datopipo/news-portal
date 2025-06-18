@@ -27,7 +27,7 @@ class SendWeeklyStatsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->title('📊 Weekly Stats Sender');
+        $io->title('Weekly Stats Sender');
 
         try {
             $success = $this->weeklyStatsService->sendWeeklyStats();

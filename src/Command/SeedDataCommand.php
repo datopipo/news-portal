@@ -35,7 +35,7 @@ class SeedDataCommand extends Command
         $io->title('🌱 News Portal Data Seeder');
 
         if ($input->getOption('clear')) {
-            $io->section('🗑️  Clearing existing data...');
+            $io->section('Clearing existing data...');
             
             // Remove SQLite database file directly (cleaner approach)
             $dbFile = __DIR__ . '/../../var/data_dev.db';
@@ -53,7 +53,7 @@ class SeedDataCommand extends Command
             $io->success('Database cleared and recreated');
         }
 
-        $io->section('📊 Loading fixtures...');
+        $io->section('Loading fixtures...');
 
         // Load fixtures
         $process = new Process(['php', 'bin/console', 'doctrine:fixtures:load', '--no-interaction']);
